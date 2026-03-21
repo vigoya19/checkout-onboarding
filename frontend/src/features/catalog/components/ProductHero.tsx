@@ -8,25 +8,51 @@ type ProductHeroProps = {
 export function ProductHero({ product }: ProductHeroProps) {
   return (
     <section className="shell card hero-card">
-      <div className="badge-row">
-        <span className="badge badge-primary">Checkout onboarding</span>
-        <span className="badge">Mobile first</span>
-      </div>
+      <div className="hero-main">
+        <div className="hero-copy">
+          <div className="badge-row">
+            <span className="badge badge-primary">Checkout onboarding</span>
+            <span className="badge">Mobile first</span>
+          </div>
 
-      <div className="hero-copy">
-        <p className="eyebrow">Producto destacado</p>
-        <h1>{product.name}</h1>
-        <p className="description">{product.description}</p>
-      </div>
+          <p className="eyebrow">Producto seleccionado</p>
+          <h1>{product.name}</h1>
+          <p className="description">{product.description}</p>
 
-      <div className="price-panel">
-        <div>
-          <span className="label">Precio base</span>
-          <strong>{formatCurrency(product.priceInCents, product.currency)}</strong>
+          <div className="hero-meta">
+            <div className="hero-meta-item">
+              <span className="label">Precio de venta</span>
+              <strong>{formatCurrency(product.priceInCents, product.currency)}</strong>
+            </div>
+            <div className="hero-meta-item">
+              <span className="label">Disponibilidad</span>
+              <strong>{product.stock} unidades</strong>
+            </div>
+          </div>
         </div>
-        <div>
-          <span className="label">Stock disponible</span>
-          <strong>{product.stock} unidades</strong>
+
+        <div className="hero-showcase">
+          <div className="hero-console-glow" />
+          <div className="hero-console-card">
+            <span className="hero-console-tag">Compra directa</span>
+            <strong>{product.name}</strong>
+            <p>Checkout de un solo producto, sin carrito, como pide la prueba.</p>
+
+            <div className="hero-console-specs">
+              <div>
+                <span>Fee base</span>
+                <strong>Fijo</strong>
+              </div>
+              <div>
+                <span>Entrega</span>
+                <strong>Incluida</strong>
+              </div>
+              <div>
+                <span>Estado</span>
+                <strong>Listo para pagar</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

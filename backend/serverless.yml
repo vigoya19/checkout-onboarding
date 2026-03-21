@@ -3,6 +3,9 @@ service: checkout-onboarding-api
 frameworkVersion: '3'
 useDotenv: true
 
+plugins:
+  - serverless-plugin-monorepo
+
 provider:
   name: aws
   runtime: nodejs20.x

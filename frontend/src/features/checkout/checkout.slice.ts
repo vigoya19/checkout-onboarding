@@ -15,8 +15,8 @@ export type CheckoutState = {
 export const initialCheckoutState: CheckoutState = {
   currentStep: 1,
   draft: {
-    baseFeeInCents: 3900,
-    deliveryFeeInCents: 9900,
+    baseFeeInCents: 390000,
+    deliveryFeeInCents: 990000,
     customerName: '',
     customerEmail: '',
     address: '',
@@ -30,10 +30,17 @@ const checkoutSlice = createSlice({
     advanceStep(state) {
       state.currentStep = Math.min(state.currentStep + 1, 4)
     },
+    startCheckout(state) {
+      state.currentStep = 2
+    },
+    returnToCatalog(state) {
+      state.currentStep = 1
+    },
   },
 })
 
-export const { advanceStep } = checkoutSlice.actions
+export const { advanceStep, returnToCatalog, startCheckout } =
+  checkoutSlice.actions
 export const checkoutReducer = checkoutSlice.reducer
 
 export const selectCheckoutStep = (state: RootState) => state.checkout.currentStep
