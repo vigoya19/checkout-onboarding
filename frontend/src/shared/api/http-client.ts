@@ -1,8 +1,7 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api'
+import { appEnv } from '@/shared/config/env'
 
 export async function httpGet<TResponse>(path: string): Promise<TResponse> {
-  const response = await fetch(`${API_BASE_URL}${path}`)
+  const response = await fetch(`${appEnv.apiBaseUrl}${path}`)
 
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`)

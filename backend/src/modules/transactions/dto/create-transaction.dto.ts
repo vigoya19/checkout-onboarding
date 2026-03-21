@@ -18,4 +18,7 @@ export class CreateTransactionDto {
   @IsInt()
   @Min(0)
   deliveryFeeInCents!: number;
+
+  @IsString()
+  currency!: 'COP';
 }

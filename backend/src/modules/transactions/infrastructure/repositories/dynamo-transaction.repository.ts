@@ -15,6 +15,7 @@ import { DYNAMODB_DOCUMENT_CLIENT } from '../../../../shared/infrastructure/dyna
 
 type TransactionRecord = {
   transactionId: string;
+  reference: string;
   productId: string;
   customerEmail: string;
   amountInCents: number;
@@ -23,6 +24,11 @@ type TransactionRecord = {
   paymentStatus: PaymentStatus;
   fulfillmentStatus: FulfillmentStatus;
   createdAt: string;
+  wompiTransactionId?: string | null;
+  paymentMethodType?: string | null;
+  paymentStatusMessage?: string | null;
+  cardBrand?: string | null;
+  cardLastFour?: string | null;
 };
 
 @Injectable()
@@ -40,24 +46,7 @@ export class DynamoTransactionRepository implements TransactionRepositoryPort {
   }
 
   async create(transaction: Transaction) {
-    await this.dynamoDbDocumentClient.send(
-      new PutCommand({
-        TableName: this.tableName,
-        Item: {
-          transactionId: transaction.transactionId,
-          productId: transaction.productId,
-          customerEmail: transaction.customerEmail,
-          amountInCents: transaction.amountInCents,
-          baseFeeInCents: transaction.baseFeeInCents,
-          deliveryFeeInCents: transaction.deliveryFeeInCents,
-          paymentStatus: transaction.paymentStatus,
-          fulfillmentStatus: transaction.fulfillmentStatus,
-          createdAt: transaction.createdAt,
-        } satisfies TransactionRecord,
-      }),
-    );
-
-    return transaction;
+    return this.save(transaction);
   }
 
   async findById(transactionId: string) {
@@ -78,6 +67,7 @@ export class DynamoTransactionRepository implements TransactionRepositoryPort {
   private toDomain(record: TransactionRecord) {
     return new Transaction(
       record.transactionId,
+      record.reference,
       record.productId,
       record.customerEmail,
       record.amountInCents,
@@ -86,6 +76,38 @@ export class DynamoTransactionRepository implements TransactionRepositoryPort {
       record.paymentStatus,
       record.fulfillmentStatus,
       record.createdAt,
+      record.wompiTransactionId ?? null,
+      record.paymentMethodType ?? null,
+      record.paymentStatusMessage ?? null,
+      record.cardBrand ?? null,
+      record.cardLastFour ?? null,
     );
+  }
+
+  async save(transaction: Transaction) {
+    await this.dynamoDbDocumentClient.send(
+      new PutCommand({
+        TableName: this.tableName,
+        Item: {
+          transactionId: transaction.transactionId,
+          reference: transaction.reference,
+          productId: transaction.productId,
+          customerEmail: transaction.customerEmail,
+          amountInCents: transaction.amountInCents,
+          baseFeeInCents: transaction.baseFeeInCents,
+          deliveryFeeInCents: transaction.deliveryFeeInCents,
+          paymentStatus: transaction.paymentStatus,
+          fulfillmentStatus: transaction.fulfillmentStatus,
+          createdAt: transaction.createdAt,
+          wompiTransactionId: transaction.wompiTransactionId,
+          paymentMethodType: transaction.paymentMethodType,
+          paymentStatusMessage: transaction.paymentStatusMessage,
+          cardBrand: transaction.cardBrand,
+          cardLastFour: transaction.cardLastFour,
+        } satisfies TransactionRecord,
+      }),
+    );
+
+    return transaction;
   }
 }

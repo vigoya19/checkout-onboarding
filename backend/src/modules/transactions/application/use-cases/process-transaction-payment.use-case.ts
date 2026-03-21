@@ -1,16 +1,22 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
-  TRANSACTION_REPOSITORY,
-  type TransactionRepositoryPort,
-} from '../ports/transaction-repository.port';
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   WOMPI_GATEWAY,
   type WompiGatewayPort,
 } from '../../../payments/application/ports/wompi-gateway.port';
+import {
+  TRANSACTION_REPOSITORY,
+  type TransactionRepositoryPort,
+} from '../ports/transaction-repository.port';
+import { ProcessTransactionPaymentDto } from '../../dto/process-transaction-payment.dto';
 import type { PaymentStatus } from '../../domain/transaction.entity';
 
 @Injectable()
-export class GetTransactionUseCase {
+export class ProcessTransactionPaymentUseCase {
   constructor(
     @Inject(TRANSACTION_REPOSITORY)
     private readonly transactionRepository: TransactionRepositoryPort,
@@ -18,7 +24,7 @@ export class GetTransactionUseCase {
     private readonly wompiGateway: WompiGatewayPort,
   ) {}
 
-  async execute(transactionId: string) {
+  async execute(transactionId: string, payload: ProcessTransactionPaymentDto) {
     const transaction =
       await this.transactionRepository.findById(transactionId);
 
@@ -26,16 +32,23 @@ export class GetTransactionUseCase {
       throw new NotFoundException(`Transaction ${transactionId} was not found`);
     }
 
-    if (
-      transaction.paymentStatus !== 'PENDING' ||
-      !transaction.wompiTransactionId
-    ) {
-      return transaction;
+    if (transaction.wompiTransactionId) {
+      throw new BadRequestException(
+        `Transaction ${transactionId} is already linked to Wompi`,
+      );
     }
 
-    const wompiTransaction = await this.wompiGateway.getTransaction(
-      transaction.wompiTransactionId,
-    );
+    const wompiTransaction = await this.wompiGateway.createCardTransaction({
+      reference: transaction.reference,
+      amountInCents: transaction.amountInCents,
+      currency: 'COP',
+      customerEmail: transaction.customerEmail,
+      cardToken: payload.cardToken,
+      acceptanceToken: payload.acceptanceToken,
+      acceptPersonalAuthToken: payload.acceptPersonalAuthToken,
+      customerIp: payload.customerIp,
+      installments: payload.installments,
+    });
 
     const updatedTransaction = transaction.syncPayment({
       paymentStatus: this.toPaymentStatus(wompiTransaction.status),

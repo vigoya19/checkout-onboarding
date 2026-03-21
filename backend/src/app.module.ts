@@ -5,6 +5,7 @@ import { CheckoutModule } from './modules/checkout/checkout.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DeliveriesModule } from './modules/deliveries/deliveries.module';
 import { HealthModule } from './modules/health/health.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
     CheckoutModule,
     CustomersModule,
     DeliveriesModule,
+    PaymentsModule,
     TransactionsModule,
   ],
 })

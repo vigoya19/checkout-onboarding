@@ -15,8 +15,10 @@ export class CreateTransactionUseCase {
   ) {}
 
   execute(payload: CreateTransactionDto) {
+    const transactionId = randomUUID();
     const transaction = new Transaction(
-      randomUUID(),
+      transactionId,
+      transactionId,
       payload.productId,
       payload.customerEmail,
       payload.amountInCents,

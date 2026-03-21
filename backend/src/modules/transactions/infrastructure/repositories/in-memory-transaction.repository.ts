@@ -15,4 +15,10 @@ export class InMemoryTransactionRepository implements TransactionRepositoryPort 
   findById(transactionId: string) {
     return Promise.resolve(this.transactions.get(transactionId) ?? null);
   }
+
+  save(transaction: Transaction) {
+    this.transactions.set(transaction.transactionId, transaction);
+
+    return Promise.resolve(transaction);
+  }
 }

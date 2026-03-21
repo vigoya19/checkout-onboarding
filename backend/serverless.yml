@@ -1,0 +1,154 @@
+service: checkout-onboarding-api
+
+frameworkVersion: '3'
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, env:AWS_REGION, 'eu-west-1'}
+  logRetentionInDays: 14
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - content-type
+        - authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+  environment:
+    PORT: '3000'
+    USE_DYNAMODB: 'true'
+    DYNAMODB_TABLE_PRODUCTS: ${self:custom.tableNames.products}
+    DYNAMODB_TABLE_TRANSACTIONS: ${self:custom.tableNames.transactions}
+    DYNAMODB_TABLE_CUSTOMERS: ${self:custom.tableNames.customers}
+    DYNAMODB_TABLE_DELIVERIES: ${self:custom.tableNames.deliveries}
+    DYNAMODB_TABLE_CHECKOUT_SESSIONS: ${self:custom.tableNames.checkoutSessions}
+    WOMPI_BASE_URL: ${env:WOMPI_BASE_URL}
+    WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY}
+    WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
+    WOMPI_INTEGRITY_SECRET: ${env:WOMPI_INTEGRITY_SECRET}
+    WOMPI_EVENTS_SECRET: ${env:WOMPI_EVENTS_SECRET}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:Scan
+            - dynamodb:Query
+          Resource:
+            - !GetAtt ProductsTable.Arn
+            - !GetAtt TransactionsTable.Arn
+            - !GetAtt CustomersTable.Arn
+            - !GetAtt DeliveriesTable.Arn
+            - !GetAtt CheckoutSessionsTable.Arn
+
+package:
+  patterns:
+    - dist/**
+    - package.json
+    - package-lock.json
+    - '!src/**'
+    - '!test/**'
+    - '!.env'
+    - '!.env.example'
+    - '!coverage/**'
+
+custom:
+  tableNames:
+    products: ${self:service}-${self:provider.stage}-products
+    transactions: ${self:service}-${self:provider.stage}-transactions
+    customers: ${self:service}-${self:provider.stage}-customers
+    deliveries: ${self:service}-${self:provider.stage}-deliveries
+    checkoutSessions: ${self:service}-${self:provider.stage}-checkout-sessions
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    timeout: 29
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /
+          method: ANY
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNames.products}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: productId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: productId
+            KeyType: HASH
+
+    TransactionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNames.transactions}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: transactionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: transactionId
+            KeyType: HASH
+
+    CustomersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNames.customers}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+
+    DeliveriesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNames.deliveries}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: transactionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: transactionId
+            KeyType: HASH
+
+    CheckoutSessionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNames.checkoutSessions}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: sessionId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: sessionId
+            KeyType: HASH
+
+  Outputs:
+    ProductsTableName:
+      Value: ${self:custom.tableNames.products}
+    TransactionsTableName:
+      Value: ${self:custom.tableNames.transactions}
