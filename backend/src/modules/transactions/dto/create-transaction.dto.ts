@@ -7,6 +7,21 @@ export class CreateTransactionDto {
   @IsEmail()
   customerEmail!: string;
 
+  @IsString()
+  customerName!: string;
+
+  @IsString()
+  customerPhone!: string;
+
+  @IsString()
+  addressLine1!: string;
+
+  @IsString()
+  city!: string;
+
+  @IsString()
+  department!: string;
+
   @IsInt()
   @Min(1)
   amountInCents!: number;

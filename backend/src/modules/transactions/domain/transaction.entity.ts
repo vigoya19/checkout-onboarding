@@ -11,7 +11,12 @@ export class Transaction {
     readonly transactionId: string,
     readonly reference: string,
     readonly productId: string,
+    readonly customerName: string,
     readonly customerEmail: string,
+    readonly customerPhone: string,
+    readonly addressLine1: string,
+    readonly city: string,
+    readonly department: string,
     readonly amountInCents: number,
     readonly baseFeeInCents: number,
     readonly deliveryFeeInCents: number,
@@ -37,7 +42,12 @@ export class Transaction {
       this.transactionId,
       this.reference,
       this.productId,
+      this.customerName,
       this.customerEmail,
+      this.customerPhone,
+      this.addressLine1,
+      this.city,
+      this.department,
       this.amountInCents,
       this.baseFeeInCents,
       this.deliveryFeeInCents,
@@ -49,6 +59,31 @@ export class Transaction {
       payload.paymentStatusMessage,
       payload.cardBrand,
       payload.cardLastFour,
+    );
+  }
+
+  syncFulfillment(payload: { fulfillmentStatus: FulfillmentStatus }) {
+    return new Transaction(
+      this.transactionId,
+      this.reference,
+      this.productId,
+      this.customerName,
+      this.customerEmail,
+      this.customerPhone,
+      this.addressLine1,
+      this.city,
+      this.department,
+      this.amountInCents,
+      this.baseFeeInCents,
+      this.deliveryFeeInCents,
+      this.paymentStatus,
+      payload.fulfillmentStatus,
+      this.createdAt,
+      this.wompiTransactionId,
+      this.paymentMethodType,
+      this.paymentStatusMessage,
+      this.cardBrand,
+      this.cardLastFour,
     );
   }
 }

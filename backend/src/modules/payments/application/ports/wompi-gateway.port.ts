@@ -2,7 +2,9 @@ export const WOMPI_GATEWAY = Symbol('WOMPI_GATEWAY');
 
 export type WompiAcceptanceTokens = {
   acceptanceToken: string;
+  acceptancePermalink: string | null;
   acceptPersonalAuthToken: string | null;
+  acceptPersonalAuthPermalink: string | null;
 };
 
 export type CreateWompiCardTransactionInput = {

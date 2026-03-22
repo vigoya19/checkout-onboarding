@@ -34,5 +34,6 @@ import { DynamoDbModule } from '../../shared/infrastructure/dynamodb/dynamodb.mo
           : inMemoryRepository,
     },
   ],
+  exports: [PRODUCT_REPOSITORY],
 })
 export class CatalogModule {}

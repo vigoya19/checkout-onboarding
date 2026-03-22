@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   TRANSACTION_REPOSITORY,
   type TransactionRepositoryPort,
@@ -8,17 +8,23 @@ import {
   type WompiGatewayPort,
 } from '../../../payments/application/ports/wompi-gateway.port';
 import type { PaymentStatus } from '../../domain/transaction.entity';
+import { FulfillApprovedTransactionUseCase } from './fulfill-approved-transaction.use-case';
 
 @Injectable()
 export class GetTransactionUseCase {
+  private readonly logger = new Logger(GetTransactionUseCase.name);
+
   constructor(
     @Inject(TRANSACTION_REPOSITORY)
     private readonly transactionRepository: TransactionRepositoryPort,
     @Inject(WOMPI_GATEWAY)
     private readonly wompiGateway: WompiGatewayPort,
+    private readonly fulfillApprovedTransactionUseCase: FulfillApprovedTransactionUseCase,
   ) {}
 
   async execute(transactionId: string) {
+    this.logger.log(`Fetching transaction ${transactionId}`);
+
     const transaction =
       await this.transactionRepository.findById(transactionId);
 
@@ -30,8 +36,15 @@ export class GetTransactionUseCase {
       transaction.paymentStatus !== 'PENDING' ||
       !transaction.wompiTransactionId
     ) {
+      this.logger.log(
+        `Transaction ${transactionId} returned without Wompi sync. Status: ${transaction.paymentStatus}`,
+      );
       return transaction;
     }
+
+    this.logger.log(
+      `Syncing pending transaction ${transactionId} with Wompi transaction ${transaction.wompiTransactionId}`,
+    );
 
     const wompiTransaction = await this.wompiGateway.getTransaction(
       transaction.wompiTransactionId,
@@ -46,7 +59,14 @@ export class GetTransactionUseCase {
       cardLastFour: wompiTransaction.cardLastFour,
     });
 
-    return this.transactionRepository.save(updatedTransaction);
+    const fulfilledTransaction =
+      await this.fulfillApprovedTransactionUseCase.execute(updatedTransaction);
+
+    this.logger.log(
+      `Transaction ${transactionId} synced from Wompi with status ${fulfilledTransaction.paymentStatus} / ${fulfilledTransaction.fulfillmentStatus}`,
+    );
+
+    return this.transactionRepository.save(fulfilledTransaction);
   }
 
   private toPaymentStatus(status: string): PaymentStatus {

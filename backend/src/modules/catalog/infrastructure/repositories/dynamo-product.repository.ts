@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  GetCommand,
+  PutCommand,
   ScanCommand,
   type DynamoDBDocumentClient,
 } from '@aws-sdk/lib-dynamodb';
@@ -40,6 +42,39 @@ export class DynamoProductRepository implements ProductRepositoryPort {
     return (response.Items ?? []).map((item) =>
       this.toDomain(item as ProductRecord),
     );
+  }
+
+  async findById(productId: string) {
+    const response = await this.dynamoDbDocumentClient.send(
+      new GetCommand({
+        TableName: this.tableName,
+        Key: { productId },
+      }),
+    );
+
+    if (!response.Item) {
+      return null;
+    }
+
+    return this.toDomain(response.Item as ProductRecord);
+  }
+
+  async save(product: Product) {
+    await this.dynamoDbDocumentClient.send(
+      new PutCommand({
+        TableName: this.tableName,
+        Item: {
+          productId: product.id,
+          name: product.name,
+          description: product.description,
+          priceInCents: product.priceInCents,
+          currency: product.currency,
+          stock: product.stock,
+        } satisfies ProductRecord,
+      }),
+    );
+
+    return product;
   }
 
   private toDomain(record: ProductRecord) {

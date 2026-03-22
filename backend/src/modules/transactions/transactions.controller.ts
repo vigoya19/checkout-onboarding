@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { CreateTransactionUseCase } from './application/use-cases/create-transaction.use-case';
 import { GetTransactionUseCase } from './application/use-cases/get-transaction.use-case';
 import { HandleWompiWebhookUseCase } from './application/use-cases/handle-wompi-webhook.use-case';
@@ -29,11 +30,26 @@ export class TransactionsController {
   payTransaction(
     @Param('transactionId') transactionId: string,
     @Body() payload: ProcessTransactionPaymentDto,
+    @Req() request: Request,
   ) {
-    return this.processTransactionPaymentUseCase.execute(
-      transactionId,
-      payload,
-    );
+    return this.processTransactionPaymentUseCase.execute(transactionId, {
+      ...payload,
+      customerIp: payload.customerIp ?? this.resolveCustomerIp(request),
+    });
+  }
+
+  private resolveCustomerIp(request: Request) {
+    const forwardedFor = request.headers['x-forwarded-for'];
+
+    if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
+      return forwardedFor.split(',')[0].trim();
+    }
+
+    if (Array.isArray(forwardedFor) && forwardedFor.length > 0) {
+      return forwardedFor[0];
+    }
+
+    return request.ip ?? '127.0.0.1';
   }
 }
 

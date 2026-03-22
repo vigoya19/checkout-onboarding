@@ -12,7 +12,8 @@ export class ProcessTransactionPaymentDto {
   acceptPersonalAuthToken?: string;
 
   @IsString()
-  customerIp!: string;
+  @IsOptional()
+  customerIp?: string;
 
   @IsInt()
   @Min(1)

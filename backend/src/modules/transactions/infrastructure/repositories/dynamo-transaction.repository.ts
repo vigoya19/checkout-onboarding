@@ -17,7 +17,12 @@ type TransactionRecord = {
   transactionId: string;
   reference: string;
   productId: string;
+  customerName: string;
   customerEmail: string;
+  customerPhone: string;
+  addressLine1: string;
+  city: string;
+  department: string;
   amountInCents: number;
   baseFeeInCents: number;
   deliveryFeeInCents: number;
@@ -69,7 +74,12 @@ export class DynamoTransactionRepository implements TransactionRepositoryPort {
       record.transactionId,
       record.reference,
       record.productId,
+      record.customerName,
       record.customerEmail,
+      record.customerPhone,
+      record.addressLine1,
+      record.city,
+      record.department,
       record.amountInCents,
       record.baseFeeInCents,
       record.deliveryFeeInCents,
@@ -92,7 +102,12 @@ export class DynamoTransactionRepository implements TransactionRepositoryPort {
           transactionId: transaction.transactionId,
           reference: transaction.reference,
           productId: transaction.productId,
+          customerName: transaction.customerName,
           customerEmail: transaction.customerEmail,
+          customerPhone: transaction.customerPhone,
+          addressLine1: transaction.addressLine1,
+          city: transaction.city,
+          department: transaction.department,
           amountInCents: transaction.amountInCents,
           baseFeeInCents: transaction.baseFeeInCents,
           deliveryFeeInCents: transaction.deliveryFeeInCents,

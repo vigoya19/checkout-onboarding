@@ -199,7 +199,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"amountInCents\": {{amountInCents}},\n  \"baseFeeInCents\": {{baseFeeInCents}},\n  \"deliveryFeeInCents\": {{deliveryFeeInCents}},\n  \"currency\": \"{{currency}}\"\n}"
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"customerEmail\": \"{{customerEmail}}\",\n  \"customerName\": \"{{customerName}}\",\n  \"customerPhone\": \"{{customerPhone}}\",\n  \"addressLine1\": \"{{addressLine1}}\",\n  \"city\": \"{{city}}\",\n  \"department\": \"{{department}}\",\n  \"amountInCents\": {{amountInCents}},\n  \"baseFeeInCents\": {{baseFeeInCents}},\n  \"deliveryFeeInCents\": {{deliveryFeeInCents}},\n  \"currency\": \"{{currency}}\"\n}"
             },
             "url": {
               "raw": "{{apiBaseUrl}}/transactions",

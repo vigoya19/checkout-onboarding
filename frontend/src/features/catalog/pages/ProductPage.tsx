@@ -12,9 +12,15 @@ import {
 import {
   returnToCatalog,
   selectCheckoutDraft,
+  selectCheckoutResult,
+  selectCheckoutStatusMessage,
   selectCheckoutStep,
+  selectCheckoutTransactionReference,
   startCheckout,
 } from '@/features/checkout/checkout.slice'
+import { CheckoutModal } from '@/features/checkout/components/CheckoutModal'
+import { FinalStatusPanel } from '@/features/checkout/components/FinalStatusPanel'
+import { SummaryBackdrop } from '@/features/checkout/components/SummaryBackdrop'
 import { formatCurrency } from '@/shared/lib/currency'
 
 const steps = [
@@ -32,6 +38,11 @@ export function ProductPage() {
   const errorMessage = useAppSelector(selectCatalogErrorMessage)
   const checkoutStep = useAppSelector(selectCheckoutStep)
   const checkoutDraft = useAppSelector(selectCheckoutDraft)
+  const checkoutResult = useAppSelector(selectCheckoutResult)
+  const checkoutStatusMessage = useAppSelector(selectCheckoutStatusMessage)
+  const checkoutTransactionReference = useAppSelector(
+    selectCheckoutTransactionReference,
+  )
 
   useEffect(() => {
     if (status === 'idle') {
@@ -42,6 +53,11 @@ export function ProductPage() {
   const handleBuyProduct = (productId: string) => {
     dispatch(selectProduct(productId))
     dispatch(startCheckout())
+  }
+
+  const handleReturnToCatalog = () => {
+    dispatch(returnToCatalog())
+    void dispatch(fetchProducts())
   }
 
   return (
@@ -202,6 +218,26 @@ export function ProductPage() {
           </div>
         </aside>
       </section>
+
+      {checkoutStep === 2 ? (
+        <CheckoutModal
+          draft={checkoutDraft}
+          onClose={handleReturnToCatalog}
+        />
+      ) : null}
+
+      {checkoutStep === 3 ? (
+        <SummaryBackdrop draft={checkoutDraft} product={product} />
+      ) : null}
+
+      {checkoutStep === 4 && checkoutResult ? (
+        <FinalStatusPanel
+          result={checkoutResult}
+          statusMessage={checkoutStatusMessage}
+          transactionReference={checkoutTransactionReference}
+          onReturn={handleReturnToCatalog}
+        />
+      ) : null}
     </main>
   )
 }

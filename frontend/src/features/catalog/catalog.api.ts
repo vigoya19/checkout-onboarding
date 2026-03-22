@@ -7,7 +7,7 @@ type ProductResponse = {
   name: string
   description: string
   priceInCents: number
-  currency: string
+  currency: 'COP'
   stock: number
 }
 

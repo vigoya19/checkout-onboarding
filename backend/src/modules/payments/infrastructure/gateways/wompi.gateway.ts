@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type {
   CreateWompiCardTransactionInput,
@@ -13,9 +13,11 @@ type WompiMerchantResponse = {
   data: {
     presigned_acceptance: {
       acceptance_token: string;
+      permalink?: string;
     };
     presigned_personal_data_auth?: {
       acceptance_token: string;
+      permalink?: string;
     };
   };
 };
@@ -36,6 +38,7 @@ type WompiTransactionResponse = {
 
 @Injectable()
 export class WompiGateway implements WompiGatewayPort {
+  private readonly logger = new Logger(WompiGateway.name);
   private readonly wompiBaseUrl: string;
   private readonly wompiPublicKey: string;
   private readonly wompiPrivateKey: string;
@@ -53,6 +56,10 @@ export class WompiGateway implements WompiGatewayPort {
   }
 
   async getAcceptanceTokens(): Promise<WompiAcceptanceTokens> {
+    this.logger.log(
+      `Fetching acceptance tokens from ${this.wompiBaseUrl} for public key ${this.maskValue(this.wompiPublicKey)}`,
+    );
+
     const response = await fetch(
       `${this.wompiBaseUrl}/merchants/${this.wompiPublicKey}`,
     );
@@ -65,16 +72,25 @@ export class WompiGateway implements WompiGatewayPort {
 
     const body = (await response.json()) as WompiMerchantResponse;
 
+    this.logger.log('Acceptance tokens fetched successfully from Wompi');
+
     return {
       acceptanceToken: body.data.presigned_acceptance.acceptance_token,
+      acceptancePermalink: body.data.presigned_acceptance.permalink ?? null,
       acceptPersonalAuthToken:
         body.data.presigned_personal_data_auth?.acceptance_token ?? null,
+      acceptPersonalAuthPermalink:
+        body.data.presigned_personal_data_auth?.permalink ?? null,
     };
   }
 
   async createCardTransaction(
     input: CreateWompiCardTransactionInput,
   ): Promise<WompiTransactionSnapshot> {
+    this.logger.log(
+      `Creating Wompi transaction for reference ${input.reference} amount ${input.amountInCents} and email ${input.customerEmail}`,
+    );
+
     const payload = {
       amount_in_cents: input.amountInCents,
       currency: input.currency,
@@ -114,12 +130,18 @@ export class WompiGateway implements WompiGatewayPort {
 
     const body = (await response.json()) as WompiTransactionResponse;
 
+    this.logger.log(
+      `Wompi transaction created: ${body.data.id} with status ${body.data.status}`,
+    );
+
     return this.toSnapshot(body.data);
   }
 
   async getTransaction(
     transactionId: string,
   ): Promise<WompiTransactionSnapshot> {
+    this.logger.log(`Fetching Wompi transaction ${transactionId}`);
+
     const response = await fetch(
       `${this.wompiBaseUrl}/transactions/${transactionId}`,
       {
@@ -138,11 +160,16 @@ export class WompiGateway implements WompiGatewayPort {
 
     const body = (await response.json()) as WompiTransactionResponse;
 
+    this.logger.log(
+      `Fetched Wompi transaction ${body.data.id} with status ${body.data.status}`,
+    );
+
     return this.toSnapshot(body.data);
   }
 
   verifyWebhookSignature(payload: WompiWebhookPayload) {
     if (!payload.signature || !payload.timestamp) {
+      this.logger.warn('Wompi webhook signature or timestamp missing');
       return false;
     }
 
@@ -157,7 +184,14 @@ export class WompiGateway implements WompiGatewayPort {
       .digest('hex')
       .toUpperCase();
 
-    return expectedChecksum === payload.signature.checksum.toUpperCase();
+    const isValid =
+      expectedChecksum === payload.signature.checksum.toUpperCase();
+
+    this.logger.log(
+      `Wompi webhook signature validation result: ${isValid ? 'valid' : 'invalid'}`,
+    );
+
+    return isValid;
   }
 
   private generateIntegritySignature(
@@ -216,5 +250,13 @@ export class WompiGateway implements WompiGatewayPort {
     }
 
     return value;
+  }
+
+  private maskValue(value: string) {
+    if (value.length <= 8) {
+      return '***';
+    }
+
+    return `${value.slice(0, 4)}***${value.slice(-4)}`;
   }
 }
