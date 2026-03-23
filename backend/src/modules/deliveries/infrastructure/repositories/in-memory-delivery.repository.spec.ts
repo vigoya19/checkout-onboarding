@@ -22,7 +22,8 @@ describe('InMemoryDeliveryRepository', () => {
 
     await repository.create(delivery);
 
-    await expect(repository.findByTransactionId('tx-1')).resolves.toBe(delivery);
+    await expect(repository.findByTransactionId('tx-1')).resolves.toBe(
+      delivery,
+    );
   });
 });
-

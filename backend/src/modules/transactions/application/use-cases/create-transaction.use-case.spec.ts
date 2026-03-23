@@ -24,29 +24,39 @@ describe('CreateTransactionUseCase', () => {
       { create: jest.fn() } as never,
     );
 
-    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(NotFoundException);
+    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('throws when the product is out of stock', async () => {
     const useCase = new CreateTransactionUseCase(
       {
-        findById: jest.fn().mockResolvedValue(
-          new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 0),
-        ),
+        findById: jest
+          .fn()
+          .mockResolvedValue(
+            new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 0),
+          ),
       } as never,
       { create: jest.fn() } as never,
     );
 
-    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(BadRequestException);
+    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('creates a pending transaction', async () => {
-    const create = jest.fn().mockImplementation(async (transaction) => transaction);
+    const create = jest
+      .fn()
+      .mockImplementation(async (transaction) => transaction);
     const useCase = new CreateTransactionUseCase(
       {
-        findById: jest.fn().mockResolvedValue(
-          new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2),
-        ),
+        findById: jest
+          .fn()
+          .mockResolvedValue(
+            new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2),
+          ),
       } as never,
       { create } as never,
     );
@@ -60,4 +70,3 @@ describe('CreateTransactionUseCase', () => {
     expect(create).toHaveBeenCalledTimes(1);
   });
 });
-

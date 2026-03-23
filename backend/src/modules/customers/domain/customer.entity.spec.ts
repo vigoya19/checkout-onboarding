@@ -13,4 +13,3 @@ describe('Customer', () => {
     expect(customer.email).toBe('jane@example.com');
   });
 });
-

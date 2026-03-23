@@ -15,4 +15,3 @@ describe('Delivery', () => {
     expect(delivery.status).toBe('PENDING');
   });
 });
-

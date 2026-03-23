@@ -1,4 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import {
+  buildStatusMessage,
+  waitForFinalTransactionState,
+} from '@/features/checkout/components/SummaryBackdrop.helpers'
 import { formatCurrency } from '@/shared/lib/currency'
 import type { Product } from '@/shared/types/product'
 import {
@@ -13,9 +18,7 @@ import {
 import { getAcceptanceTokens, tokenizeCard } from '@/features/payments/payments.api'
 import {
   createTransaction,
-  getTransaction,
   payTransaction,
-  type CheckoutTransaction,
 } from '@/features/transactions/transactions.api'
 
 type SummaryBackdropProps = {
@@ -23,56 +26,38 @@ type SummaryBackdropProps = {
   product: Product
 }
 
-function buildStatusMessage(transaction: CheckoutTransaction) {
-  if (transaction.fulfillmentStatus === 'FAILED') {
-    return 'El pago fue aprobado, pero no pudimos reservar stock o crear la entrega.';
-  }
-
-  if (transaction.paymentStatus === 'PENDING') {
-    return (
-      transaction.paymentStatusMessage ??
-      'La transaccion sigue pendiente en Wompi. Puedes volver al catalogo y consultar el estado mas tarde.'
-    )
-  }
-
-  return (
-    transaction.paymentStatusMessage ??
-    (transaction.paymentStatus === 'APPROVED'
-      ? 'Wompi aprobo la transaccion.'
-      : 'Wompi no aprobo la transaccion.')
-  )
-}
-
-async function waitForFinalTransactionState(transactionId: string) {
-  let latestTransaction = await getTransaction(transactionId)
-
-  if (latestTransaction.paymentStatus !== 'PENDING') {
-    return latestTransaction
-  }
-
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 1200)
-    })
-
-    latestTransaction = await getTransaction(transactionId)
-
-    if (latestTransaction.paymentStatus !== 'PENDING') {
-      return latestTransaction
-    }
-  }
-
-  return latestTransaction
-}
+const paymentStages = [
+  'Validando terminos y autorizaciones',
+  'Tokenizando la tarjeta en Wompi',
+  'Confirmando el cobro con el banco',
+] as const
 
 export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
   const dispatch = useAppDispatch()
   const isSubmittingPayment = useAppSelector(selectIsSubmittingPayment)
   const paymentError = useAppSelector(selectPaymentError)
+  const [activeStageIndex, setActiveStageIndex] = useState(0)
   const total =
     product.priceInCents + draft.baseFeeInCents + draft.deliveryFeeInCents
 
+  useEffect(() => {
+    if (!isSubmittingPayment) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveStageIndex((currentIndex) =>
+        Math.min(currentIndex + 1, paymentStages.length - 1),
+      )
+    }, 950)
+
+    return () => {
+      window.clearInterval(timer)
+    }
+  }, [isSubmittingPayment])
+
   const handlePay = async () => {
+    setActiveStageIndex(0)
     dispatch(startPaymentSubmission())
 
     try {
@@ -186,12 +171,59 @@ export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
           </div>
         </div>
 
+        {isSubmittingPayment ? (
+          <div className="payment-processing-panel" aria-live="polite">
+            <div className="payment-processing-header">
+              <div className="payment-processing-orbit" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div>
+                <span className="label">Wompi sandbox</span>
+                <strong>Estamos procesando tu pago</strong>
+                <p>
+                  No cierres esta ventana. Estamos validando la tarjeta y
+                  esperando la confirmacion del cobro.
+                </p>
+              </div>
+            </div>
+
+            <div className="payment-processing-track" aria-hidden="true">
+              <span
+                style={{
+                  width: `${((activeStageIndex + 1) / paymentStages.length) * 100}%`,
+                }}
+              />
+            </div>
+
+            <ul className="payment-stage-list">
+              {paymentStages.map((stage, stageIndex) => (
+                <li
+                  key={stage}
+                  className={
+                    stageIndex === activeStageIndex
+                      ? 'payment-stage-item active'
+                      : stageIndex < activeStageIndex
+                        ? 'payment-stage-item complete'
+                        : 'payment-stage-item'
+                  }
+                >
+                  <span>{stageIndex + 1}</span>
+                  <strong>{stage}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         {paymentError ? <p className="form-error">{paymentError}</p> : null}
 
         <div className="overlay-actions">
           <button
             className="ghost-button"
             onClick={() => dispatch(backToPayment())}
+            disabled={isSubmittingPayment}
             type="button"
           >
             Editar informacion
@@ -202,7 +234,7 @@ export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
             disabled={isSubmittingPayment}
             type="button"
           >
-            {isSubmittingPayment ? 'Procesando pago...' : 'Pagar con tarjeta'}
+            {isSubmittingPayment ? 'Confirmando pago...' : 'Pagar con tarjeta'}
           </button>
         </div>
       </section>

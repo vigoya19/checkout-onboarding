@@ -69,9 +69,11 @@ describe('FulfillApprovedTransactionUseCase', () => {
   it('marks fulfillment as failed when the product is out of stock', async () => {
     const useCase = new FulfillApprovedTransactionUseCase(
       {
-        findById: jest.fn().mockResolvedValue(
-          new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 0),
-        ),
+        findById: jest
+          .fn()
+          .mockResolvedValue(
+            new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 0),
+          ),
         save: jest.fn(),
       } as never,
       { findByEmail: jest.fn(), create: jest.fn() } as never,
@@ -87,7 +89,9 @@ describe('FulfillApprovedTransactionUseCase', () => {
     const productRepository = {
       findById: jest
         .fn()
-        .mockResolvedValue(new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2)),
+        .mockResolvedValue(
+          new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2),
+        ),
       save: jest.fn().mockImplementation(async (product) => product),
     };
     const customerRepository = {
@@ -118,7 +122,9 @@ describe('FulfillApprovedTransactionUseCase', () => {
     const productRepository = {
       findById: jest
         .fn()
-        .mockResolvedValue(new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2)),
+        .mockResolvedValue(
+          new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2),
+        ),
       save: jest.fn().mockImplementation(async (product) => product),
     };
     const useCase = new FulfillApprovedTransactionUseCase(
@@ -127,7 +133,13 @@ describe('FulfillApprovedTransactionUseCase', () => {
         findByEmail: jest
           .fn()
           .mockResolvedValue(
-            new Customer('customer-1', 'Jane Doe', 'jane@example.com', '3001234567', 'date'),
+            new Customer(
+              'customer-1',
+              'Jane Doe',
+              'jane@example.com',
+              '3001234567',
+              'date',
+            ),
           ),
         create: jest.fn(),
       } as never,
@@ -135,7 +147,15 @@ describe('FulfillApprovedTransactionUseCase', () => {
         findByTransactionId: jest
           .fn()
           .mockResolvedValue(
-            new Delivery('delivery-1', 'tx-1', 'jane@example.com', 'Street 1', 'Bogota', 'PENDING', 'date'),
+            new Delivery(
+              'delivery-1',
+              'tx-1',
+              'jane@example.com',
+              'Street 1',
+              'Bogota',
+              'PENDING',
+              'date',
+            ),
           ),
         create: jest.fn(),
       } as never,
@@ -149,4 +169,3 @@ describe('FulfillApprovedTransactionUseCase', () => {
     );
   });
 });
-

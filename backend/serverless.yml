@@ -33,7 +33,6 @@ provider:
     DYNAMODB_TABLE_TRANSACTIONS: ${self:custom.tableNames.transactions}
     DYNAMODB_TABLE_CUSTOMERS: ${self:custom.tableNames.customers}
     DYNAMODB_TABLE_DELIVERIES: ${self:custom.tableNames.deliveries}
-    DYNAMODB_TABLE_CHECKOUT_SESSIONS: ${self:custom.tableNames.checkoutSessions}
     WOMPI_BASE_URL: ${env:WOMPI_BASE_URL}
     WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY}
     WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
@@ -54,7 +53,6 @@ provider:
             - !GetAtt TransactionsTable.Arn
             - !GetAtt CustomersTable.Arn
             - !GetAtt DeliveriesTable.Arn
-            - !GetAtt CheckoutSessionsTable.Arn
 
 package:
   patterns:
@@ -73,7 +71,6 @@ custom:
     transactions: ${self:service}-${self:provider.stage}-transactions
     customers: ${self:service}-${self:provider.stage}-customers
     deliveries: ${self:service}-${self:provider.stage}-deliveries
-    checkoutSessions: ${self:service}-${self:provider.stage}-checkout-sessions
 
 functions:
   api:
@@ -136,18 +133,6 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: transactionId
-            KeyType: HASH
-
-    CheckoutSessionsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:custom.tableNames.checkoutSessions}
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: sessionId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: sessionId
             KeyType: HASH
 
   Outputs:

@@ -29,7 +29,9 @@ describe('GetTransactionUseCase', () => {
       { execute: jest.fn() } as never,
     );
 
-    await expect(useCase.execute('missing')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(useCase.execute('missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('returns non-pending transactions without syncing Wompi', async () => {
@@ -43,7 +45,10 @@ describe('GetTransactionUseCase', () => {
     });
     const getTransaction = jest.fn();
     const useCase = new GetTransactionUseCase(
-      { findById: jest.fn().mockResolvedValue(transaction), save: jest.fn() } as never,
+      {
+        findById: jest.fn().mockResolvedValue(transaction),
+        save: jest.fn(),
+      } as never,
       { getTransaction } as never,
       { execute: jest.fn() } as never,
     );
@@ -71,14 +76,21 @@ describe('GetTransactionUseCase', () => {
       { execute: jest.fn() } as never,
     );
 
-    await expect(useCase.execute('tx-1')).resolves.toBe(localOnlyPendingTransaction);
+    await expect(useCase.execute('tx-1')).resolves.toBe(
+      localOnlyPendingTransaction,
+    );
     expect(getTransaction).not.toHaveBeenCalled();
   });
 
   it('syncs pending transactions with Wompi', async () => {
-    const save = jest.fn().mockImplementation(async (transaction) => transaction);
+    const save = jest
+      .fn()
+      .mockImplementation(async (transaction) => transaction);
     const useCase = new GetTransactionUseCase(
-      { findById: jest.fn().mockResolvedValue(pendingTransaction), save } as never,
+      {
+        findById: jest.fn().mockResolvedValue(pendingTransaction),
+        save,
+      } as never,
       {
         getTransaction: jest.fn().mockResolvedValue({
           id: 'wompi-1',
@@ -90,7 +102,11 @@ describe('GetTransactionUseCase', () => {
           cardLastFour: '4242',
         }),
       } as never,
-      { execute: jest.fn().mockImplementation(async (transaction) => transaction) } as never,
+      {
+        execute: jest
+          .fn()
+          .mockImplementation(async (transaction) => transaction),
+      } as never,
     );
 
     await expect(useCase.execute('tx-1')).resolves.toEqual(

@@ -9,4 +9,3 @@ describe('ListProductsUseCase', () => {
     expect(list).toHaveBeenCalledTimes(1);
   });
 });
-

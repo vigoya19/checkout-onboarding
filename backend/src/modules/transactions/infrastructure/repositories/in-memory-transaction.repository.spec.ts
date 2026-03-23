@@ -45,4 +45,3 @@ describe('InMemoryTransactionRepository', () => {
     await expect(repository.save(transaction)).resolves.toBe(transaction);
   });
 });
-

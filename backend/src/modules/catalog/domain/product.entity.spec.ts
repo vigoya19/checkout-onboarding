@@ -25,4 +25,3 @@ describe('Product', () => {
     expect(updated.stock).toBe(1);
   });
 });
-

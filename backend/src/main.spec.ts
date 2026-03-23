@@ -105,4 +105,3 @@ describe('main bootstrap', () => {
     expect(app.listen).toHaveBeenCalledWith(3000);
   });
 });
-

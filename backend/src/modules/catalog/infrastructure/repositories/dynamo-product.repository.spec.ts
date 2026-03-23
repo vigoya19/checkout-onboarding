@@ -1,4 +1,4 @@
-import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { Product } from '../../domain/product.entity';
 import { DynamoProductRepository } from './dynamo-product.repository';
 

@@ -83,7 +83,9 @@ describe('HandleWompiWebhookUseCase', () => {
       },
     });
 
-    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(NotFoundException);
+    await expect(useCase.execute(payload)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('persists the webhook update', async () => {
@@ -91,7 +93,9 @@ describe('HandleWompiWebhookUseCase', () => {
     const useCase = new HandleWompiWebhookUseCase(
       { findById: jest.fn().mockResolvedValue(transaction), save } as never,
       { verifyWebhookSignature: jest.fn().mockReturnValue(true) } as never,
-      { execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled) } as never,
+      {
+        execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled),
+      } as never,
     );
     const payload = plainToInstance(WompiWebhookDto, {
       event: 'transaction.updated',
@@ -120,7 +124,9 @@ describe('HandleWompiWebhookUseCase', () => {
     const useCase = new HandleWompiWebhookUseCase(
       { findById: jest.fn().mockResolvedValue(transaction), save } as never,
       { verifyWebhookSignature: jest.fn().mockReturnValue(true) } as never,
-      { execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled) } as never,
+      {
+        execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled),
+      } as never,
     );
     const payload = plainToInstance(WompiWebhookDto, {
       event: 'transaction.updated',

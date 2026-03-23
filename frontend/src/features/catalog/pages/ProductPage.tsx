@@ -81,59 +81,69 @@ export function ProductPage() {
               {status === 'loading'
                 ? 'Cargando productos desde la API'
                 : status === 'failed'
-                  ? 'Usando fallback local'
-                  : 'Producto cargado desde backend'}
+                  ? 'No se pudo cargar el catalogo'
+                  : products.length > 0
+                    ? 'Catalogo cargado desde backend'
+                    : 'No hay productos disponibles'}
             </strong>
             {errorMessage ? <p>{errorMessage}</p> : null}
           </div>
 
-          <div className="product-list">
-            {products.map((catalogProduct) => {
-              const isSelected = catalogProduct.id === product.id
+          {products.length > 0 ? (
+            <div className="product-list">
+              {products.map((catalogProduct) => {
+                const isSelected = catalogProduct.id === product?.id
 
-              return (
-                <article
-                  key={catalogProduct.id}
-                  className={isSelected ? 'product-card selected' : 'product-card'}
-                >
-                  <div className="product-card-accent" />
-                  <div className="product-card-copy">
-                    <div className="product-card-header">
-                      <div>
-                        <p className="product-card-kicker">Consola disponible</p>
-                        <h3>{catalogProduct.name}</h3>
+                return (
+                  <article
+                    key={catalogProduct.id}
+                    className={isSelected ? 'product-card selected' : 'product-card'}
+                  >
+                    <div className="product-card-accent" />
+                    <div className="product-card-copy">
+                      <div className="product-card-header">
+                        <div>
+                          <p className="product-card-kicker">Consola disponible</p>
+                          <h3>{catalogProduct.name}</h3>
+                        </div>
+                        <span className="stock-pill">
+                          {catalogProduct.stock} en stock
+                        </span>
                       </div>
-                      <span className="stock-pill">
-                        {catalogProduct.stock} en stock
-                      </span>
+
+                      <p>{catalogProduct.description}</p>
                     </div>
 
-                    <p>{catalogProduct.description}</p>
-                  </div>
+                    <div className="product-card-footer">
+                      <div>
+                        <span className="label">Precio</span>
+                        <strong>
+                          {formatCurrency(
+                            catalogProduct.priceInCents,
+                            catalogProduct.currency,
+                          )}
+                        </strong>
+                      </div>
 
-                  <div className="product-card-footer">
-                    <div>
-                      <span className="label">Precio</span>
-                      <strong>
-                        {formatCurrency(
-                          catalogProduct.priceInCents,
-                          catalogProduct.currency,
-                        )}
-                      </strong>
+                      <button
+                        className={isSelected ? 'ghost-button' : 'primary-button'}
+                        onClick={() => handleBuyProduct(catalogProduct.id)}
+                        type="button"
+                      >
+                        {isSelected ? 'Seleccionada' : 'Comprar'}
+                      </button>
                     </div>
-
-                    <button
-                      className={isSelected ? 'ghost-button' : 'primary-button'}
-                      onClick={() => handleBuyProduct(catalogProduct.id)}
-                      type="button"
-                    >
-                      {isSelected ? 'Seleccionada' : 'Comprar'}
-                    </button>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
+                  </article>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="status-panel">
+              <span className="label">Catalogo</span>
+              <strong>No hay productos para iniciar el checkout</strong>
+              <p>Si el backend esta arriba, vuelve a recargar la pantalla.</p>
+            </div>
+          )}
 
           <ol className="step-list">
             {steps.map((label, index) => {
@@ -170,10 +180,11 @@ export function ProductPage() {
             </button>
             <button
               className="primary-button"
+              disabled={!product}
               onClick={() => dispatch(startCheckout())}
               type="button"
             >
-              Comprar {product.name}
+              {product ? `Comprar ${product.name}` : 'Checkout no disponible'}
             </button>
           </div>
         </article>
@@ -194,24 +205,36 @@ export function ProductPage() {
             </div>
             <div>
               <dt>Total producto</dt>
-              <dd>{formatCurrency(product.priceInCents, product.currency)}</dd>
+              <dd>
+                {product
+                  ? formatCurrency(product.priceInCents, product.currency)
+                  : 'Sin producto'}
+              </dd>
             </div>
             <div>
               <dt>Fee base</dt>
-              <dd>{formatCurrency(checkoutDraft.baseFeeInCents, product.currency)}</dd>
+              <dd>
+                {formatCurrency(
+                  checkoutDraft.baseFeeInCents,
+                  product?.currency ?? 'COP',
+                )}
+              </dd>
             </div>
             <div>
               <dt>Delivery fee</dt>
               <dd>
-                {formatCurrency(checkoutDraft.deliveryFeeInCents, product.currency)}
+                {formatCurrency(
+                  checkoutDraft.deliveryFeeInCents,
+                  product?.currency ?? 'COP',
+                )}
               </dd>
             </div>
           </dl>
 
           <div className="status-panel">
-            <span className="label">Siguiente integracion</span>
+            <span className="label">Siguiente paso</span>
             <strong>
-              {checkoutStep >= 2
+              {product && checkoutStep >= 2
                 ? 'Abrir modal de pago y datos de entrega'
                 : 'Selecciona una consola para iniciar el flujo'}
             </strong>
@@ -219,14 +242,14 @@ export function ProductPage() {
         </aside>
       </section>
 
-      {checkoutStep === 2 ? (
+      {checkoutStep === 2 && product ? (
         <CheckoutModal
           draft={checkoutDraft}
           onClose={handleReturnToCatalog}
         />
       ) : null}
 
-      {checkoutStep === 3 ? (
+      {checkoutStep === 3 && product ? (
         <SummaryBackdrop draft={checkoutDraft} product={product} />
       ) : null}
 

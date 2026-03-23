@@ -1,7 +1,6 @@
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { AppModule } from './app.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
-import { CheckoutModule } from './modules/checkout/checkout.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DeliveriesModule } from './modules/deliveries/deliveries.module';
 import { HealthModule } from './modules/health/health.module';
@@ -16,7 +15,6 @@ describe('AppModule', () => {
       expect.arrayContaining([
         HealthModule,
         CatalogModule,
-        CheckoutModule,
         CustomersModule,
         DeliveriesModule,
         PaymentsModule,
@@ -25,4 +23,3 @@ describe('AppModule', () => {
     );
   });
 });
-

@@ -61,4 +61,3 @@ describe('Transaction', () => {
     expect(updated.fulfillmentStatus).toBe('COMPLETED');
   });
 });
-

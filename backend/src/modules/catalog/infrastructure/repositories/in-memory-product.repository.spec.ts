@@ -25,4 +25,3 @@ describe('InMemoryProductRepository', () => {
     await expect(repository.findById('custom')).resolves.toBe(product);
   });
 });
-

@@ -1,4 +1,7 @@
-import { TransactionsController, WompiWebhookController } from './transactions.controller';
+import {
+  TransactionsController,
+  WompiWebhookController,
+} from './transactions.controller';
 
 describe('TransactionsController', () => {
   it('delegates transaction creation', async () => {
@@ -9,7 +12,9 @@ describe('TransactionsController', () => {
       { execute: jest.fn() } as never,
     );
 
-    await expect(controller.createTransaction({} as never)).resolves.toBe('created');
+    await expect(controller.createTransaction({} as never)).resolves.toBe(
+      'created',
+    );
     expect(execute).toHaveBeenCalledTimes(1);
   });
 
@@ -21,7 +26,9 @@ describe('TransactionsController', () => {
       { execute: jest.fn() } as never,
     );
 
-    await expect(controller.getTransaction('tx-1')).resolves.toBe('transaction');
+    await expect(controller.getTransaction('tx-1')).resolves.toBe(
+      'transaction',
+    );
     expect(execute).toHaveBeenCalledWith('tx-1');
   });
 
@@ -36,7 +43,10 @@ describe('TransactionsController', () => {
     await controller.payTransaction(
       'tx-1',
       { installments: 1 } as never,
-      { headers: { 'x-forwarded-for': '10.0.0.1, 10.0.0.2' }, ip: '127.0.0.1' } as never,
+      {
+        headers: { 'x-forwarded-for': '10.0.0.1, 10.0.0.2' },
+        ip: '127.0.0.1',
+      } as never,
     );
 
     expect(execute).toHaveBeenCalledWith(
@@ -56,7 +66,10 @@ describe('TransactionsController', () => {
     await controller.payTransaction(
       'tx-1',
       { installments: 1 } as never,
-      { headers: { 'x-forwarded-for': ['10.0.0.3'] }, ip: '127.0.0.1' } as never,
+      {
+        headers: { 'x-forwarded-for': ['10.0.0.3'] },
+        ip: '127.0.0.1',
+      } as never,
     );
 
     expect(execute).toHaveBeenCalledWith(

@@ -2,10 +2,41 @@ import { formatCurrency } from '@/shared/lib/currency'
 import type { Product } from '@/shared/types/product'
 
 type ProductHeroProps = {
-  product: Product
+  product: Product | null
 }
 
 export function ProductHero({ product }: ProductHeroProps) {
+  if (!product) {
+    return (
+      <section className="shell card hero-card">
+        <div className="hero-main">
+          <div className="hero-copy">
+            <div className="badge-row">
+              <span className="badge badge-primary">Checkout onboarding</span>
+              <span className="badge">Mobile first</span>
+            </div>
+
+            <p className="eyebrow">Catalogo</p>
+            <h1>Sin productos disponibles</h1>
+            <p className="description">
+              Cuando la API devuelva productos sembrados, el checkout quedara
+              habilitado desde aqui.
+            </p>
+          </div>
+
+          <div className="hero-showcase">
+            <div className="hero-console-glow" />
+            <div className="hero-console-card">
+              <span className="hero-console-tag">Estado</span>
+              <strong>Catalogo vacio</strong>
+              <p>Revisa el backend o vuelve a cargar para intentar otra vez.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="shell card hero-card">
       <div className="hero-main">

@@ -5,13 +5,19 @@ import { DynamoDbModule } from './dynamodb.module';
 
 describe('DynamoDbModule', () => {
   it('exports the document client token', () => {
-    const exportsMetadata = Reflect.getMetadata(MODULE_METADATA.EXPORTS, DynamoDbModule);
+    const exportsMetadata = Reflect.getMetadata(
+      MODULE_METADATA.EXPORTS,
+      DynamoDbModule,
+    );
 
     expect(exportsMetadata).toContain(DYNAMODB_DOCUMENT_CLIENT);
   });
 
   it('injects ConfigService in the provider factory', () => {
-    const providers = Reflect.getMetadata(MODULE_METADATA.PROVIDERS, DynamoDbModule);
+    const providers = Reflect.getMetadata(
+      MODULE_METADATA.PROVIDERS,
+      DynamoDbModule,
+    );
     const provider = providers[0] as {
       provide: symbol;
       inject: unknown[];
@@ -35,7 +41,10 @@ describe('DynamoDbModule', () => {
 
     jest.isolateModules(() => {
       const { DynamoDbModule: IsolatedModule } = require('./dynamodb.module');
-      const providers = Reflect.getMetadata(MODULE_METADATA.PROVIDERS, IsolatedModule);
+      const providers = Reflect.getMetadata(
+        MODULE_METADATA.PROVIDERS,
+        IsolatedModule,
+      );
       const provider = providers[0] as {
         useFactory: (configService: ConfigService) => unknown;
       };
@@ -61,7 +70,10 @@ describe('DynamoDbModule', () => {
 
     jest.isolateModules(() => {
       const { DynamoDbModule: IsolatedModule } = require('./dynamodb.module');
-      const providers = Reflect.getMetadata(MODULE_METADATA.PROVIDERS, IsolatedModule);
+      const providers = Reflect.getMetadata(
+        MODULE_METADATA.PROVIDERS,
+        IsolatedModule,
+      );
       const provider = providers[0] as {
         useFactory: (configService: ConfigService) => unknown;
       };

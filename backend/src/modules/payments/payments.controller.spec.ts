@@ -9,4 +9,3 @@ describe('PaymentsController', () => {
     expect(execute).toHaveBeenCalledTimes(1);
   });
 });
-

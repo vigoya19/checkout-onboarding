@@ -9,4 +9,3 @@ describe('CatalogController', () => {
     expect(execute).toHaveBeenCalledTimes(1);
   });
 });
-

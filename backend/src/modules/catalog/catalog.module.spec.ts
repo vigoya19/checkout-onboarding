@@ -5,9 +5,16 @@ import { InMemoryProductRepository } from './infrastructure/repositories/in-memo
 
 describe('CatalogModule', () => {
   it('selects the dynamo repository when enabled', () => {
-    const providers = Reflect.getMetadata(MODULE_METADATA.PROVIDERS, CatalogModule);
+    const providers = Reflect.getMetadata(
+      MODULE_METADATA.PROVIDERS,
+      CatalogModule,
+    );
     const factoryProvider = providers[3] as {
-      useFactory: (config: { get: (key: string) => string }, dynamo: unknown, memory: unknown) => unknown;
+      useFactory: (
+        config: { get: (key: string) => string },
+        dynamo: unknown,
+        memory: unknown,
+      ) => unknown;
     };
     const dynamo = {} as DynamoProductRepository;
 
@@ -21,9 +28,16 @@ describe('CatalogModule', () => {
   });
 
   it('selects the in-memory repository when dynamo is disabled', () => {
-    const providers = Reflect.getMetadata(MODULE_METADATA.PROVIDERS, CatalogModule);
+    const providers = Reflect.getMetadata(
+      MODULE_METADATA.PROVIDERS,
+      CatalogModule,
+    );
     const factoryProvider = providers[3] as {
-      useFactory: (config: { get: (key: string) => string }, dynamo: unknown, memory: unknown) => unknown;
+      useFactory: (
+        config: { get: (key: string) => string },
+        dynamo: unknown,
+        memory: unknown,
+      ) => unknown;
     };
     const inMemory = {} as InMemoryProductRepository;
 
@@ -36,4 +50,3 @@ describe('CatalogModule', () => {
     ).toBe(inMemory);
   });
 });
-

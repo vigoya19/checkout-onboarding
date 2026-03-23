@@ -5,7 +5,9 @@ describe('InMemoryCustomerRepository', () => {
   it('returns null for an unknown customer', async () => {
     const repository = new InMemoryCustomerRepository();
 
-    await expect(repository.findByEmail('missing@example.com')).resolves.toBeNull();
+    await expect(
+      repository.findByEmail('missing@example.com'),
+    ).resolves.toBeNull();
   });
 
   it('stores and retrieves a customer', async () => {
@@ -20,7 +22,8 @@ describe('InMemoryCustomerRepository', () => {
 
     await repository.create(customer);
 
-    await expect(repository.findByEmail('jane@example.com')).resolves.toBe(customer);
+    await expect(repository.findByEmail('jane@example.com')).resolves.toBe(
+      customer,
+    );
   });
 });
-

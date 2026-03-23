@@ -36,7 +36,9 @@ describe('ProcessTransactionPaymentUseCase', () => {
       { execute: jest.fn() } as never,
     );
 
-    await expect(useCase.execute('missing', payload)).rejects.toBeInstanceOf(NotFoundException);
+    await expect(useCase.execute('missing', payload)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('throws when the transaction is already linked to Wompi', async () => {
@@ -49,12 +51,17 @@ describe('ProcessTransactionPaymentUseCase', () => {
       cardLastFour: null,
     });
     const useCase = new ProcessTransactionPaymentUseCase(
-      { findById: jest.fn().mockResolvedValue(linked), save: jest.fn() } as never,
+      {
+        findById: jest.fn().mockResolvedValue(linked),
+        save: jest.fn(),
+      } as never,
       { createCardTransaction: jest.fn() } as never,
       { execute: jest.fn() } as never,
     );
 
-    await expect(useCase.execute('tx-1', payload)).rejects.toBeInstanceOf(BadRequestException);
+    await expect(useCase.execute('tx-1', payload)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('creates the payment transaction and persists the result', async () => {
@@ -72,7 +79,9 @@ describe('ProcessTransactionPaymentUseCase', () => {
           cardLastFour: '4242',
         }),
       } as never,
-      { execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled) } as never,
+      {
+        execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled),
+      } as never,
     );
 
     await expect(useCase.execute('tx-1', payload)).resolves.toEqual(
@@ -96,7 +105,9 @@ describe('ProcessTransactionPaymentUseCase', () => {
           cardLastFour: '4242',
         }),
       } as never,
-      { execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled) } as never,
+      {
+        execute: jest.fn().mockImplementation(async (fulfilled) => fulfilled),
+      } as never,
     );
 
     await useCase.execute(

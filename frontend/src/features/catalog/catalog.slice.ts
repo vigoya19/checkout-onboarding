@@ -10,66 +10,9 @@ type CatalogState = {
   errorMessage: string | null
 }
 
-const fallbackProducts: Product[] = [
-  {
-    id: 'prod_ps5',
-    name: 'PlayStation 5',
-    description:
-      'Consola PS5 de nueva generacion con almacenamiento de 1 TB y soporte para juego en 4K.',
-    priceInCents: 299900000,
-    currency: 'COP',
-    stock: 6,
-  },
-  {
-    id: 'prod_ps4',
-    name: 'PlayStation 4',
-    description:
-      'Consola PS4 Slim de 1 TB ideal para catalogo legacy y juegos de generacion anterior.',
-    priceInCents: 139989000,
-    currency: 'COP',
-    stock: 8,
-  },
-  {
-    id: 'prod_xbox_series_x',
-    name: 'Xbox Series X',
-    description:
-      'Consola Xbox Series X de 1 TB para juego en 4K con alto rendimiento.',
-    priceInCents: 309990000,
-    currency: 'COP',
-    stock: 5,
-  },
-  {
-    id: 'prod_xbox_series_s',
-    name: 'Xbox Series S',
-    description:
-      'Consola Xbox Series S compacta con 512 GB y excelente relacion costo-rendimiento.',
-    priceInCents: 194990000,
-    currency: 'COP',
-    stock: 9,
-  },
-  {
-    id: 'prod_nintendo_switch',
-    name: 'Nintendo Switch',
-    description:
-      'Consola hibrida Nintendo Switch con Joy-Con y bundle digital de Mario Kart 8.',
-    priceInCents: 159900000,
-    currency: 'COP',
-    stock: 12,
-  },
-  {
-    id: 'prod_nintendo_switch_2',
-    name: 'Nintendo Switch 2',
-    description:
-      'Nueva Nintendo Switch 2 con mejoras de rendimiento y precio oficial sugerido en Colombia.',
-    priceInCents: 285990000,
-    currency: 'COP',
-    stock: 7,
-  },
-]
-
 const initialState: CatalogState = {
-  products: fallbackProducts,
-  selectedProductId: 'prod_ps5',
+  products: [],
+  selectedProductId: '',
   status: 'idle',
   errorMessage: null,
 }
@@ -126,4 +69,4 @@ export const selectCatalogErrorMessage = (state: RootState) =>
 export const selectSelectedProduct = (state: RootState) =>
   state.catalog.products.find(
     (product) => product.id === state.catalog.selectedProductId,
-  ) ?? state.catalog.products[0]
+  ) ?? state.catalog.products[0] ?? null

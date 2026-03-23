@@ -27,7 +27,9 @@ describe('DynamoCustomerRepository', () => {
       { get: jest.fn().mockReturnValue('CustomersTable') } as never,
     );
 
-    await expect(repository.findByEmail('missing@example.com')).resolves.toBeNull();
+    await expect(
+      repository.findByEmail('missing@example.com'),
+    ).resolves.toBeNull();
   });
 
   it('maps an existing customer', async () => {

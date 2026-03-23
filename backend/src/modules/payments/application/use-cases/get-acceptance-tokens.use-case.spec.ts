@@ -11,4 +11,3 @@ describe('GetAcceptanceTokensUseCase', () => {
     expect(getAcceptanceTokens).toHaveBeenCalledTimes(1);
   });
 });
-
