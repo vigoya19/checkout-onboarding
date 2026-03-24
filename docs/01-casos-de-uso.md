@@ -1,5 +1,7 @@
 # Casos de uso
 
+[Volver al indice principal](../README.md)
+
 ## Objetivo
 
 Soportar la compra de un producto con tarjeta de credito, integrando Wompi Sandbox, calculo de fees, actualizacion de stock y persistencia del estado de la transaccion.
@@ -161,3 +163,7 @@ Wompi puede actualizar el estado final por webhook.
 ### Descripcion
 
 Despues del estado final, el usuario vuelve al catalogo y la app refresca los productos para mostrar el stock real.
+
+---
+
+[Volver al indice principal](../README.md)

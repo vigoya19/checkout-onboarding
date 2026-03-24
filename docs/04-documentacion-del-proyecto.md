@@ -1,5 +1,7 @@
 # Documentacion del proyecto
 
+[Volver al indice principal](../README.md)
+
 ## Resumen
 
 Este proyecto implementa un checkout onboarding para compra de un producto usando Wompi Sandbox. La solucion cumple el flujo funcional principal del reto:
@@ -99,3 +101,7 @@ npm run deploy
 4. Coleccion Postman
 5. URL del backend desplegado
 6. URL del frontend desplegado
+
+---
+
+[Volver al indice principal](../README.md)

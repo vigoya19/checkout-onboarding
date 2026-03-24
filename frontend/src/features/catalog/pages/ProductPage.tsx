@@ -94,6 +94,7 @@ export function ProductPage() {
   const checkoutTransactionReference = useAppSelector(
     selectCheckoutTransactionReference,
   )
+  const isCatalogLoading = status === 'idle' || status === 'loading'
 
   useEffect(() => {
     if (status === 'idle') {
@@ -144,7 +145,7 @@ export function ProductPage() {
 
   return (
     <main className="page">
-      <ProductHero product={product} />
+      <ProductHero product={product} status={status} />
 
       <section className="shell grid-layout">
         <article className="card flow-card">
@@ -235,6 +236,40 @@ export function ProductPage() {
                   </article>
                 )
               })}
+            </div>
+          ) : isCatalogLoading ? (
+            <div className="product-list product-list-loading">
+              {Array.from({ length: 3 }, (_, index) => (
+                <article
+                  key={`catalog-loading-${index}`}
+                  className="product-card product-card-loading"
+                >
+                  <div className="product-card-accent" />
+
+                  <div className="product-card-image-shell">
+                    <span className="hero-skeleton hero-skeleton-image" />
+                  </div>
+
+                  <div className="product-card-copy product-card-copy-loading">
+                    <span className="hero-skeleton hero-skeleton-kicker" />
+                    <span className="hero-skeleton hero-skeleton-title" />
+                    <span className="hero-skeleton hero-skeleton-text" />
+                    <span className="hero-skeleton hero-skeleton-text short" />
+                  </div>
+
+                  <div className="product-card-footer product-card-footer-loading">
+                    <div>
+                      <span className="hero-skeleton hero-skeleton-label" />
+                      <span className="hero-skeleton hero-skeleton-price" />
+                    </div>
+
+                    <div className="product-card-actions">
+                      <span className="hero-skeleton hero-skeleton-button" />
+                      <span className="hero-skeleton hero-skeleton-button" />
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
           ) : (
             <div className="status-panel">

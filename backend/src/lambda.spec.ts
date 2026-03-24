@@ -10,6 +10,7 @@ describe('lambda handler', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       init: jest.fn(),
     };
@@ -47,6 +48,7 @@ describe('lambda handler', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       init: jest.fn(),
     };
@@ -84,6 +86,7 @@ describe('lambda handler', () => {
         create: jest.fn().mockResolvedValue({
           setGlobalPrefix: jest.fn(),
           enableCors: jest.fn(),
+          use: jest.fn(),
           useGlobalPipes: jest.fn(),
           init: jest.fn(),
         }),
@@ -108,5 +111,38 @@ describe('lambda handler', () => {
     await expect(handler({ rawPath: '/api/health' }, {})).resolves.toEqual({
       ok: true,
     });
+  });
+
+  it('registers security middleware when bootstrapping lambda', async () => {
+    const app = {
+      setGlobalPrefix: jest.fn(),
+      enableCors: jest.fn(),
+      use: jest.fn(),
+      useGlobalPipes: jest.fn(),
+      init: jest.fn(),
+    };
+
+    jest.doMock('@nestjs/core', () => ({
+      NestFactory: { create: jest.fn().mockResolvedValue(app) },
+    }));
+    jest.doMock('@codegenie/serverless-express', () => ({
+      configure: jest.fn(() => jest.fn().mockResolvedValue({ ok: true })),
+    }));
+    jest.doMock('express', () => ({
+      __esModule: true,
+      default: jest.fn(() => ({ use: jest.fn() })),
+    }));
+
+    let handler!: (event: unknown, context: unknown) => Promise<unknown>;
+
+    jest.isolateModules(() => {
+      ({ handler } = require('./lambda') as {
+        handler: (event: unknown, context: unknown) => Promise<unknown>;
+      });
+    });
+
+    await handler({}, {});
+
+    expect(app.use).toHaveBeenCalledTimes(1);
   });
 });

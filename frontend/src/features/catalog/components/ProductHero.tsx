@@ -4,9 +4,54 @@ import { ProductImage } from '@/features/catalog/components/ProductImage'
 
 type ProductHeroProps = {
   product: Product | null
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
 }
 
-export function ProductHero({ product }: ProductHeroProps) {
+export function ProductHero({ product, status }: ProductHeroProps) {
+  if ((status === 'idle' || status === 'loading') && !product) {
+    return (
+      <section className="shell card hero-card">
+        <div className="hero-main">
+          <div className="hero-copy">
+            <div className="badge-row">
+              <span className="badge badge-primary">Checkout onboarding</span>
+              <span className="badge">Mobile first</span>
+            </div>
+
+            <p className="eyebrow">Catalogo</p>
+            <h1>Cargando catalogo</h1>
+            <p className="description">
+              Estamos consultando los productos y preparando la compra.
+            </p>
+
+            <div className="hero-meta hero-meta-loading">
+              <div className="hero-meta-item hero-skeleton-card">
+                <span className="hero-skeleton hero-skeleton-label" />
+                <span className="hero-skeleton hero-skeleton-value" />
+              </div>
+              <div className="hero-meta-item hero-skeleton-card">
+                <span className="hero-skeleton hero-skeleton-label" />
+                <span className="hero-skeleton hero-skeleton-value" />
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-showcase">
+            <div className="hero-console-glow" />
+            <div className="hero-console-card hero-console-card-loading">
+              <div className="hero-product-image-shell hero-product-image-shell-loading">
+                <span className="hero-skeleton hero-skeleton-image" />
+              </div>
+              <span className="hero-console-tag">Preparando compra</span>
+              <strong>Cargando producto</strong>
+              <p>En unos segundos veras el detalle del producto disponible.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   if (!product) {
     return (
       <section className="shell card hero-card">

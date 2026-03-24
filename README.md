@@ -1,43 +1,106 @@
 # Checkout Onboarding
 
-Aplicacion full stack para un flujo de checkout onboarding de un producto con pago con tarjeta usando Wompi Sandbox.
+Aplicación full stack para un flujo de compra guiada de un solo producto, con pago con tarjeta usando Wompi Sandbox, backend serverless en AWS y un asistente IA conectado por backend.
 
-## Stack
+## Indice de lectura
 
-- Frontend: React 19 + Redux Toolkit + Vite
-- Backend: NestJS 11 + TypeScript
-- Persistencia: DynamoDB
-- Infraestructura: AWS Lambda + API Gateway + Serverless Framework
-- Pruebas: Jest en frontend y backend
+Este `README` funciona como portada y guía de navegación de toda la documentación del proyecto.
 
-## Modulos principales
+### 1. Vista general
 
-- Catalogo de productos
-- Pagos y tokens de aceptacion de Wompi
-- Transacciones
-- Customers
-- Deliveries
+- [Documentación del proyecto](./docs/04-documentacion-del-proyecto.md)
+- [Casos de uso](./docs/01-casos-de-uso.md)
 
-## Flujo funcional implementado
+### 2. Arquitectura y diseño
 
-1. El usuario ve una lista de productos disponibles.
-2. Selecciona un producto y arranca el checkout.
-3. Diligencia tarjeta, datos del cliente y direccion de entrega.
-4. Acepta terminos y autorizaciones exigidas por Wompi.
-5. Revisa el resumen con producto, base fee y delivery fee cargados desde backend.
-6. El frontend tokeniza la tarjeta y el backend crea la transaccion local.
-7. El backend procesa el pago en Wompi Sandbox.
-8. Se muestra el estado final del pago.
-9. Si el pago fue aprobado, el stock baja y el catalogo se refresca.
+- [Arquitectura](./docs/03-arquitectura.md)
+- [Documentación técnica](./docs/02-documentacion-tecnica.md)
+
+### 3. API y contratos
+
+- [Endpoints y contratos](./docs/07-endpoints-y-contratos.md)
+- [Colección Postman](./postman/checkout-onboarding.postman_collection.json)
+- [README de Postman](./postman/README.md)
+
+### 4. Ejecución y pruebas
+
+- [Guía de pruebas](./docs/05-guia-de-pruebas.md)
+- [frontend/.env.example](./frontend/.env.example)
+- [backend/.env.example](./backend/.env.example)
+
+## Resumen de la solución
+
+- Frontend SPA en React 19 + Redux Toolkit + Vite
+- Backend en NestJS 11 + TypeScript
+- Persistencia en DynamoDB
+- Infraestructura serverless con AWS Lambda + API Gateway
+- Frontend publicado con S3 + CloudFront
+- Integración de pagos con Wompi Sandbox
+- Asistente IA conectado a OpenAI por backend
+- Headers de seguridad en backend con `helmet`
 
 ## Diagrama de arquitectura
 
-![Diagrama de arquitectura](./docs/DiagramaArquietctura.png)
+![Diagrama de arquitectura](./frontend/public/product-images/DiagramaArquitectura.png)
 
-Documentacion relacionada:
+Documentación relacionada:
 
 - [Arquitectura](./docs/03-arquitectura.md)
-- [Prompt para diagrama](./docs/06-prompt-diagrama-lucidchart.md)
+- [Documentación técnica](./docs/02-documentacion-tecnica.md)
+
+## Diagrama de flujo
+
+![Diagrama de flujo](./frontend/public/product-images/DiagramaFlujo.png)
+
+Documentación relacionada:
+
+- [Casos de uso](./docs/01-casos-de-uso.md)
+- [Guía de pruebas](./docs/05-guia-de-pruebas.md)
+
+## Flujo funcional implementado
+
+1. El usuario consulta el catálogo desde el frontend.
+2. Visualiza el detalle de un producto y decide iniciar la compra.
+3. El frontend carga la configuración del pago y los acceptance tokens.
+4. El usuario diligencia tarjeta, datos personales y dirección de entrega.
+5. El frontend tokeniza la tarjeta con Wompi.
+6. El backend crea la transacción local y procesa el pago en Wompi Sandbox.
+7. El sistema actualiza el estado de la transacción.
+8. Si el pago es aprobado, se crea el delivery, se actualiza el customer y se descuenta el stock.
+9. El usuario ve el estado final del pago y vuelve al catálogo con inventario actualizado.
+
+## Mapa de módulos
+
+### Frontend
+
+- Catálogo de productos
+- Flujo de compra
+- Integración con pagos
+- Integración con transacciones
+- Asistente IA
+
+### Backend
+
+- `catalog`
+- `payments`
+- `transactions`
+- `customers`
+- `deliveries`
+- `assistant`
+- `health`
+
+## Modelo de datos
+
+El diseño del modelo de datos solicitado por la prueba se documenta aquí:
+
+- [Documentación técnica - Modelo de datos](./docs/02-documentacion-tecnica.md#modelo-de-datos)
+
+Entidades principales:
+
+- `Products`
+- `Transactions`
+- `Customers`
+- `Deliveries`
 
 ## Cobertura
 
@@ -55,20 +118,15 @@ Documentacion relacionada:
 - Functions: 100%
 - Lines: 100%
 
-## Documentacion
-
-- [Casos de uso](./docs/01-casos-de-uso.md)
-- [Documentacion tecnica](./docs/02-documentacion-tecnica.md)
-- [Arquitectura](./docs/03-arquitectura.md)
-- [Documentacion del proyecto](./docs/04-documentacion-del-proyecto.md)
-- [Guia de pruebas](./docs/05-guia-de-pruebas.md)
-- [Prompt para diagrama](./docs/06-prompt-diagrama-lucidchart.md)
-
 ## Variables de entorno
 
 ### Frontend
 
-Ver [frontend/.env.example](./frontend/.env.example)
+Ver:
+
+- [frontend/.env.example](./frontend/.env.example)
+
+Variables principales:
 
 - `VITE_API_BASE_URL`
 - `VITE_WOMPI_BASE_URL`
@@ -76,7 +134,11 @@ Ver [frontend/.env.example](./frontend/.env.example)
 
 ### Backend
 
-Ver [backend/.env.example](./backend/.env.example)
+Ver:
+
+- [backend/.env.example](./backend/.env.example)
+
+Variables principales:
 
 - `PORT`
 - `AWS_REGION`
@@ -92,23 +154,19 @@ Ver [backend/.env.example](./backend/.env.example)
 - `WOMPI_EVENTS_SECRET`
 - `CHECKOUT_BASE_FEE_IN_CENTS`
 - `CHECKOUT_DELIVERY_FEE_IN_CENTS`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `OPENAI_TIMEOUT_MS`
 
-## Imagenes de productos
+## Imágenes de producto y activos visuales
 
-Las imagenes del catalogo se leen desde:
+Las imágenes del catálogo y los diagramas del proyecto se sirven desde:
 
 - [frontend/public/product-images](./frontend/public/product-images)
 
-Puedes agregar archivos con el nombre exacto del producto, por ejemplo:
+## Comandos útiles
 
-- `PlayStation 5.png`
-- `PlayStation 4.jpg`
-
-El frontend intenta cargar automaticamente extensiones `png`, `jpg`, `jpeg` y `webp`.
-
-## Comandos utiles
-
-### Raiz
+### Raíz
 
 ```bash
 npm install
@@ -122,7 +180,9 @@ npm run lint
 cd frontend
 npm run dev
 npm run lint
+npm run test -- --runInBand
 npm run test:cov
+npm run build
 ```
 
 ### Backend
@@ -131,15 +191,32 @@ npm run test:cov
 cd backend
 npm run start:dev
 npm run lint
+npm run build
+npm run test -- --runInBand
 npm run test:cov -- --runInBand
 npm run seed:products -- --replace-existing --table-name checkout-onboarding-api-dev-products --region us-east-1
 npm run deploy
 ```
 
-## Postman
+## Despliegue y recursos publicados
 
-La coleccion y environments estan en [postman](./postman).
+### Frontend
 
-## Nota
+- CloudFront: `https://dexepaqh217sp.cloudfront.net`
+- S3 website: `http://checkout-onboarding-front-615910408457-7f3a9c.s3-website-us-east-1.amazonaws.com`
 
-El backend ya esta preparado para despliegue serverless. Si haces cambios en infraestructura o codigo backend, vuelve a desplegar con `cd backend && npm run deploy`.
+### Backend
+
+- API: `https://0xcuoebg17.execute-api.us-east-1.amazonaws.com/api`
+- La API expone headers de seguridad HTTP desde NestJS
+
+## Navegación sugerida
+
+Si quieres leer la solución como si fuera un documento por capítulos:
+
+1. [Documentación del proyecto](./docs/04-documentacion-del-proyecto.md)
+2. [Casos de uso](./docs/01-casos-de-uso.md)
+3. [Arquitectura](./docs/03-arquitectura.md)
+4. [Documentación técnica](./docs/02-documentacion-tecnica.md)
+5. [Endpoints y contratos](./docs/07-endpoints-y-contratos.md)
+6. [Guía de pruebas](./docs/05-guia-de-pruebas.md)

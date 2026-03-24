@@ -1,5 +1,11 @@
 # Guia de pruebas
 
+[Volver al indice principal](../README.md)
+
+## Flujo visual de referencia
+
+![Diagrama de flujo](../frontend/public/product-images/DiagramaFlujo.png)
+
 ## 1. Preparacion local
 
 ### Instalar dependencias
@@ -69,6 +75,7 @@ Usa:
 - [checkout-onboarding.postman_collection.json](../postman/checkout-onboarding.postman_collection.json)
 - [checkout-onboarding.local.postman_environment.json](../postman/checkout-onboarding.local.postman_environment.json)
 - [checkout-onboarding.aws-dev.postman_environment.json](../postman/checkout-onboarding.aws-dev.postman_environment.json)
+- [Endpoints y contratos](./07-endpoints-y-contratos.md)
 
 ### Orden recomendado
 
@@ -134,6 +141,11 @@ Prueba:
 - `GET /api/payments/checkout-config`
 - `GET /api/payments/acceptance-tokens`
 
+Si quieres validar rápidamente los headers de seguridad:
+
+- revisa en navegador o Postman respuestas como `GET /api/health`
+- confirma presencia de headers como `x-dns-prefetch-control`, `x-frame-options`, `x-content-type-options` y `referrer-policy`
+
 ## 10. Checklist final
 
 - frontend carga productos reales
@@ -143,3 +155,8 @@ Prueba:
 - tests backend > 80%
 - Postman importable
 - variables de entorno documentadas
+- headers de seguridad visibles en la API desplegada
+
+---
+
+[Volver al indice principal](../README.md)

@@ -1,5 +1,7 @@
 # Documentacion de arquitectura
 
+[Volver al indice principal](../README.md)
+
 ## Estilo arquitectonico
 
 La solucion usa un monolito modular serverless:
@@ -9,9 +11,13 @@ La solucion usa un monolito modular serverless:
 - persistencia DynamoDB
 - pagos integrados con Wompi Sandbox
 
-## Diagrama
+## Diagrama de arquitectura
 
-![Diagrama de arquitectura](./DiagramaArquietctura.png)
+![Diagrama de arquitectura](../frontend/public/product-images/DiagramaArquitectura.png)
+
+## Diagrama de flujo
+
+![Diagrama de flujo](../frontend/public/product-images/DiagramaFlujo.png)
 
 ## Componentes
 
@@ -45,6 +51,14 @@ La solucion usa un monolito modular serverless:
 - DynamoDB
 - CloudWatch Logs
 - Serverless Framework
+
+### Seguridad
+
+- HTTPS en frontend por CloudFront
+- HTTPS en backend por API Gateway
+- validación global de requests con `ValidationPipe`
+- headers de seguridad HTTP en backend usando `helmet`
+- CORS controlado en la configuración global de Nest
 
 ## Flujo de alto nivel
 
@@ -123,3 +137,7 @@ Configuracion principal:
 - desacopla frontend, backend y proveedor de pago
 - permite pruebas unitarias por modulo
 - soporta stock y fulfillment reales
+
+---
+
+[Volver al indice principal](../README.md)

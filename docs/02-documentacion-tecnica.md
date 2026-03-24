@@ -1,5 +1,7 @@
 # Documentacion tecnica
 
+[Volver al indice principal](../README.md)
+
 ## Estructura del repositorio
 
 ```text
@@ -10,6 +12,12 @@
 |-- docs/
 |-- package.json
 ```
+
+## Navegacion tecnica recomendada
+
+- [Arquitectura](./03-arquitectura.md)
+- [Endpoints y contratos](./07-endpoints-y-contratos.md)
+- [Guia de pruebas](./05-guia-de-pruebas.md)
 
 ## Monorepo
 
@@ -78,6 +86,7 @@ frontend/src
 - AWS SDK v3
 - Serverless Framework
 - Jest
+- Helmet para headers de seguridad HTTP
 
 ### Estructura principal
 
@@ -101,16 +110,34 @@ backend/src
 - `infrastructure`: repositorios Dynamo e in-memory, cliente Wompi, modulos
 - `controller`: entrada HTTP
 
+### Seguridad HTTP
+
+La configuración global de Nest vive en una función compartida para `main.ts` y `lambda.ts`, con estas decisiones:
+
+- prefijo global `api`
+- `ValidationPipe` global con `whitelist`, `transform` y `forbidNonWhitelisted`
+- CORS explícito para `GET`, `POST` y `OPTIONS`
+- `helmet` para exponer headers de seguridad HTTP
+
+Archivo clave:
+
+- [configure-app.ts](../backend/src/configure-app.ts)
+
 ### Endpoints expuestos
 
 - `GET /api/health`
 - `GET /api/products`
 - `GET /api/payments/acceptance-tokens`
 - `GET /api/payments/checkout-config`
+- `POST /api/assistant`
 - `POST /api/transactions`
 - `GET /api/transactions/:transactionId`
 - `POST /api/transactions/:transactionId/pay`
 - `POST /api/webhooks/wompi`
+
+Detalle de contratos:
+
+- [Endpoints y contratos](./07-endpoints-y-contratos.md)
 
 ### Archivos clave
 
@@ -203,3 +230,7 @@ Productos cargados:
 - Branches: 92.36%
 - Functions: 100%
 - Lines: 100%
+
+---
+
+[Volver al indice principal](../README.md)

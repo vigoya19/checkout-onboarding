@@ -269,6 +269,54 @@
       ]
     },
     {
+      "name": "Assistant",
+      "item": [
+        {
+          "name": "Ask Assistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Que incluye el total de la compra?\",\n  \"productId\": \"{{productId}}\",\n  \"currentStep\": 1,\n  \"baseFeeInCents\": {{baseFeeInCents}},\n  \"deliveryFeeInCents\": {{deliveryFeeInCents}}\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/assistant",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "assistant"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "pm.test('assistant returns answer', function () {",
+                  "  pm.expect(data.answer).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Webhooks",
       "item": [
         {

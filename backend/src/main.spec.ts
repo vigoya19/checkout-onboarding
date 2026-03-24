@@ -8,6 +8,7 @@ describe('main bootstrap', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       listen: jest.fn(),
     };
@@ -29,6 +30,7 @@ describe('main bootstrap', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       listen: jest.fn(),
     };
@@ -49,6 +51,7 @@ describe('main bootstrap', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       listen: jest.fn(),
     };
@@ -69,6 +72,7 @@ describe('main bootstrap', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       listen: jest.fn(),
     };
@@ -89,6 +93,7 @@ describe('main bootstrap', () => {
     const app = {
       setGlobalPrefix: jest.fn(),
       enableCors: jest.fn(),
+      use: jest.fn(),
       useGlobalPipes: jest.fn(),
       listen: jest.fn(),
     };
@@ -103,5 +108,26 @@ describe('main bootstrap', () => {
     await new Promise(process.nextTick);
 
     expect(app.listen).toHaveBeenCalledWith(3000);
+  });
+
+  it('registers security middleware', async () => {
+    const app = {
+      setGlobalPrefix: jest.fn(),
+      enableCors: jest.fn(),
+      use: jest.fn(),
+      useGlobalPipes: jest.fn(),
+      listen: jest.fn(),
+    };
+
+    jest.doMock('@nestjs/core', () => ({
+      NestFactory: { create: jest.fn().mockResolvedValue(app) },
+    }));
+
+    jest.isolateModules(() => {
+      require('./main');
+    });
+    await new Promise(process.nextTick);
+
+    expect(app.use).toHaveBeenCalledTimes(1);
   });
 });

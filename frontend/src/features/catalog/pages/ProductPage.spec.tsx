@@ -10,9 +10,11 @@ jest.mock('@/app/hooks', () => ({
 jest.mock('@/features/catalog/components/ProductHero', () => ({
   ProductHero: ({
     product,
+    status,
   }: {
     product: { name: string } | null
-  }) => <div data-testid="hero">{product ? product.name : 'empty'}</div>,
+    status: string
+  }) => <div data-testid="hero">{product ? product.name : 'empty'} {status}</div>,
 }))
 
 jest.mock('@/features/assistant/components/AssistantPanel', () => ({
@@ -132,6 +134,7 @@ describe('ProductPage', () => {
           ...baseState.catalog,
           products: [],
           selectedProductId: '',
+          status: 'succeeded',
         },
       }),
     )
@@ -141,6 +144,27 @@ describe('ProductPage', () => {
     expect(
       screen.getByText('No hay productos disponibles para comprar'),
     ).toBeInTheDocument()
+  })
+
+  it('renders loading placeholders while the catalog is loading', () => {
+    ;(useAppSelector as jest.Mock).mockImplementation((selector: (state: typeof baseState) => unknown) =>
+      selector({
+        ...baseState,
+        catalog: {
+          ...baseState.catalog,
+          products: [],
+          selectedProductId: '',
+          status: 'loading',
+        },
+      }),
+    )
+
+    render(<ProductPage />)
+
+    expect(
+      screen.queryByText('No hay productos disponibles para comprar'),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Cargando productos desde la API')).toBeInTheDocument()
   })
 
   it('shows modal, summary and final panels according to the current step', () => {

@@ -1,10 +1,10 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
 import type { APIGatewayProxyEventV2, Context, Handler } from 'aws-lambda';
 import express from 'express';
 import { AppModule } from './app.module';
+import { configureApp } from './configure-app';
 
 let cachedServer: Handler;
 
@@ -15,15 +15,7 @@ async function bootstrapServer() {
     new ExpressAdapter(expressApp),
   );
 
-  app.setGlobalPrefix('api');
-  app.enableCors();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  configureApp(app);
 
   await app.init();
 

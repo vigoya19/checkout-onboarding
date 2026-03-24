@@ -1,5 +1,7 @@
 # Prompt para diagrama de arquitectura
 
+[Volver al indice principal](../README.md)
+
 Usa este prompt en Lucidchart AI o en la herramienta de diagramacion que prefieras:
 
 ```text
@@ -60,3 +62,7 @@ Entregables del diagrama:
 1. Un diagrama de componentes de alto nivel.
 2. Un diagrama de secuencia simplificado del flujo de pago.
 ```
+
+---
+
+[Volver al indice principal](../README.md)
