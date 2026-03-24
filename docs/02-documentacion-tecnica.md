@@ -153,6 +153,8 @@ Detalle de contratos:
 
 ### Products
 
+- Tabla DynamoDB: `checkout-onboarding-api-<stage>-products`
+- Partition key: `productId` (`S`)
 - `productId`
 - `name`
 - `description`
@@ -163,6 +165,8 @@ Detalle de contratos:
 
 ### Transactions
 
+- Tabla DynamoDB: `checkout-onboarding-api-<stage>-transactions`
+- Partition key: `transactionId` (`S`)
 - `transactionId`
 - `reference`
 - `productId`
@@ -186,6 +190,8 @@ Detalle de contratos:
 
 ### Customers
 
+- Tabla DynamoDB: `checkout-onboarding-api-<stage>-customers`
+- Partition key: `email` (`S`)
 - `customerId`
 - `fullName`
 - `email`
@@ -194,6 +200,8 @@ Detalle de contratos:
 
 ### Deliveries
 
+- Tabla DynamoDB: `checkout-onboarding-api-<stage>-deliveries`
+- Partition key: `transactionId` (`S`)
 - `deliveryId`
 - `transactionId`
 - `customerEmail`

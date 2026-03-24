@@ -102,21 +102,86 @@ Entidades principales:
 - `Customers`
 - `Deliveries`
 
+Detalle de tablas DynamoDB:
+
+### Products
+
+- Tabla: `checkout-onboarding-api-<stage>-products`
+- Partition key: `productId` (`S`)
+- Campos principales:
+  - `productId`
+  - `name`
+  - `description`
+  - `features`
+  - `priceInCents`
+  - `currency`
+  - `stock`
+
+### Transactions
+
+- Tabla: `checkout-onboarding-api-<stage>-transactions`
+- Partition key: `transactionId` (`S`)
+- Campos principales:
+  - `transactionId`
+  - `reference`
+  - `productId`
+  - `customerName`
+  - `customerEmail`
+  - `customerPhone`
+  - `addressLine1`
+  - `city`
+  - `department`
+  - `amountInCents`
+  - `baseFeeInCents`
+  - `deliveryFeeInCents`
+  - `paymentStatus`
+  - `fulfillmentStatus`
+  - `wompiTransactionId`
+  - `paymentMethodType`
+  - `paymentStatusMessage`
+  - `cardBrand`
+  - `cardLastFour`
+  - `createdAt`
+
+### Customers
+
+- Tabla: `checkout-onboarding-api-<stage>-customers`
+- Partition key: `email` (`S`)
+- Campos principales:
+  - `customerId`
+  - `fullName`
+  - `email`
+  - `phone`
+  - `createdAt`
+
+### Deliveries
+
+- Tabla: `checkout-onboarding-api-<stage>-deliveries`
+- Partition key: `transactionId` (`S`)
+- Campos principales:
+  - `deliveryId`
+  - `transactionId`
+  - `customerEmail`
+  - `addressLine1`
+  - `city`
+  - `status`
+  - `createdAt`
+
 ## Cobertura
 
 ### Frontend
 
-- Statements: 97.29%
-- Branches: 84.61%
-- Functions: 93.02%
-- Lines: 97.09%
+- Statements: 92.84%
+- Branches: 78.89%
+- Functions: 92.36%
+- Lines: 92.61%
 
 ### Backend
 
-- Statements: 100%
-- Branches: 92.36%
-- Functions: 100%
-- Lines: 100%
+- Statements: 97.23%
+- Branches: 88.49%
+- Functions: 99.28%
+- Lines: 97.23%
 
 ## Variables de entorno
 
