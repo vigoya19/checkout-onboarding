@@ -43,6 +43,18 @@ describe('payments.api', () => {
     expect(httpGet).toHaveBeenCalledWith('/payments/checkout-config')
   })
 
+  it('normalizes checkout config values returned as strings', async () => {
+    ;(httpGet as jest.Mock).mockResolvedValue({
+      baseFeeInCents: '390000',
+      deliveryFeeInCents: '990000',
+    })
+
+    await expect(getCheckoutConfig()).resolves.toEqual({
+      baseFeeInCents: 390000,
+      deliveryFeeInCents: 990000,
+    })
+  })
+
   it('tokenizes cards with Wompi', async () => {
     ;(global.fetch as jest.Mock).mockResolvedValue({
       ok: true,

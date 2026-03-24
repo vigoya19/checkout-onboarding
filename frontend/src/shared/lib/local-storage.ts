@@ -5,37 +5,45 @@ import {
 
 const CHECKOUT_STORAGE_KEY = 'checkout-onboarding:checkout'
 
-function normalizeFeeAmount(value: number, fallback: number) {
-  if (!Number.isFinite(value) || value <= 0) {
+function normalizeFeeAmount(value: number | string, fallback: number) {
+  const normalizedValue =
+    typeof value === 'string' ? Number.parseInt(value, 10) : value
+
+  if (!Number.isFinite(normalizedValue) || normalizedValue < 0) {
     return fallback
   }
 
-  // Migra snapshots viejos donde las fees estaban guardadas en pesos y no en centavos.
-  if (value < 100_000) {
-    return value * 100
+  if (normalizedValue < 100_000) {
+    return normalizedValue * 100
   }
 
-  return value
+  return normalizedValue
 }
 
 type LegacyCheckoutSnapshot = Partial<CheckoutState> & {
-  pricing?: Partial<CheckoutState['pricing']>
   draft?: Partial<CheckoutState['draft']> & {
-    baseFeeInCents?: number
-    deliveryFeeInCents?: number
+    baseFeeInCents?: number | string
+    deliveryFeeInCents?: number | string
+  }
+  pricing?: Partial<
+    Omit<CheckoutState['pricing'], 'baseFeeInCents' | 'deliveryFeeInCents'>
+  > & {
+    baseFeeInCents?: number | string
+    deliveryFeeInCents?: number | string
   }
 }
 
 function normalizeCheckoutState(snapshot: LegacyCheckoutSnapshot): CheckoutState {
   const legacyBaseFee = snapshot.draft?.baseFeeInCents
   const legacyDeliveryFee = snapshot.draft?.deliveryFeeInCents
+  const storedPricingBaseFee = snapshot.pricing?.baseFeeInCents
+  const storedPricingDeliveryFee = snapshot.pricing?.deliveryFeeInCents
   const normalizedPricingBaseFee = normalizeFeeAmount(
-    snapshot.pricing?.baseFeeInCents ??
-      initialCheckoutState.pricing.baseFeeInCents,
+    storedPricingBaseFee ?? initialCheckoutState.pricing.baseFeeInCents,
     initialCheckoutState.pricing.baseFeeInCents,
   )
   const normalizedPricingDeliveryFee = normalizeFeeAmount(
-    snapshot.pricing?.deliveryFeeInCents ??
+    storedPricingDeliveryFee ??
       initialCheckoutState.pricing.deliveryFeeInCents,
     initialCheckoutState.pricing.deliveryFeeInCents,
   )
@@ -47,6 +55,16 @@ function normalizeCheckoutState(snapshot: LegacyCheckoutSnapshot): CheckoutState
     legacyDeliveryFee ?? initialCheckoutState.pricing.deliveryFeeInCents,
     initialCheckoutState.pricing.deliveryFeeInCents,
   )
+  const baseFeeInCents =
+    (storedPricingBaseFee == null || normalizedPricingBaseFee === 0) &&
+    normalizedLegacyBaseFee > 0
+      ? normalizedLegacyBaseFee
+      : normalizedPricingBaseFee
+  const deliveryFeeInCents =
+    (storedPricingDeliveryFee == null || normalizedPricingDeliveryFee === 0) &&
+    normalizedLegacyDeliveryFee > 0
+      ? normalizedLegacyDeliveryFee
+      : normalizedPricingDeliveryFee
 
   return {
     ...initialCheckoutState,
@@ -54,10 +72,8 @@ function normalizeCheckoutState(snapshot: LegacyCheckoutSnapshot): CheckoutState
     pricing: {
       ...initialCheckoutState.pricing,
       ...snapshot.pricing,
-      baseFeeInCents:
-        normalizedPricingBaseFee || normalizedLegacyBaseFee,
-      deliveryFeeInCents:
-        normalizedPricingDeliveryFee || normalizedLegacyDeliveryFee,
+      baseFeeInCents,
+      deliveryFeeInCents,
     },
     draft: {
       ...initialCheckoutState.draft,

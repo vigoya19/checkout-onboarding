@@ -25,12 +25,33 @@ type WompiCardTokenResponse = {
 export type WompiAcceptanceTokens = AcceptanceTokensResponse
 export type CheckoutConfig = CheckoutConfigResponse
 
+function normalizeFeeInCents(value: unknown) {
+  const normalizedValue =
+    typeof value === 'string' ? Number.parseInt(value, 10) : value
+
+  if (typeof normalizedValue !== 'number' || !Number.isFinite(normalizedValue)) {
+    throw new Error('La configuracion de costos del backend no es valida.')
+  }
+
+  return normalizedValue
+}
+
 export async function getAcceptanceTokens() {
   return httpGet<AcceptanceTokensResponse>('/payments/acceptance-tokens')
 }
 
 export async function getCheckoutConfig() {
-  return httpGet<CheckoutConfigResponse>('/payments/checkout-config')
+  const response = await httpGet<
+    CheckoutConfigResponse & {
+      baseFeeInCents: number | string
+      deliveryFeeInCents: number | string
+    }
+  >('/payments/checkout-config')
+
+  return {
+    baseFeeInCents: normalizeFeeInCents(response.baseFeeInCents),
+    deliveryFeeInCents: normalizeFeeInCents(response.deliveryFeeInCents),
+  }
 }
 
 export async function tokenizeCard(input: {

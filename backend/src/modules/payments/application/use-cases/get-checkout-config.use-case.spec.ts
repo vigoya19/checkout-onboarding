@@ -27,4 +27,20 @@ describe('GetCheckoutConfigUseCase', () => {
       deliveryFeeInCents: 990_000,
     });
   });
+
+  it('normalizes fee values coming from env as strings', () => {
+    const get = jest
+      .fn()
+      .mockImplementation((key: string) =>
+        key === 'CHECKOUT_BASE_FEE_IN_CENTS' ? '390000' : '990000',
+      );
+    const useCase = new GetCheckoutConfigUseCase({
+      get,
+    } as never);
+
+    expect(useCase.execute()).toEqual({
+      baseFeeInCents: 390_000,
+      deliveryFeeInCents: 990_000,
+    });
+  });
 });

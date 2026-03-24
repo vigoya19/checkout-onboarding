@@ -37,6 +37,17 @@ const paymentStages = [
   'Confirmando el cobro con el banco',
 ] as const
 
+function toAmountInCents(value: number | string) {
+  const normalizedValue =
+    typeof value === 'string' ? Number.parseInt(value, 10) : value
+
+  if (typeof normalizedValue !== 'number' || !Number.isFinite(normalizedValue)) {
+    return 0
+  }
+
+  return normalizedValue
+}
+
 export function SummaryBackdrop({
   draft,
   product,
@@ -48,14 +59,18 @@ export function SummaryBackdrop({
   const checkoutPricing = useAppSelector(selectCheckoutPricing)
   const [activeStageIndex, setActiveStageIndex] = useState(0)
   const resolvedPricing = {
-    baseFeeInCents: pricing.baseFeeInCents || checkoutPricing.baseFeeInCents,
-    deliveryFeeInCents:
+    baseFeeInCents: toAmountInCents(
+      pricing.baseFeeInCents || checkoutPricing.baseFeeInCents,
+    ),
+    deliveryFeeInCents: toAmountInCents(
       pricing.deliveryFeeInCents || checkoutPricing.deliveryFeeInCents,
+    ),
   }
-  const total =
-    product.priceInCents +
-    resolvedPricing.baseFeeInCents +
-    resolvedPricing.deliveryFeeInCents
+  const total = [
+    product.priceInCents,
+    resolvedPricing.baseFeeInCents,
+    resolvedPricing.deliveryFeeInCents,
+  ].reduce((sum, amountInCents) => sum + toAmountInCents(amountInCents), 0)
 
   useEffect(() => {
     if (!isSubmittingPayment) {

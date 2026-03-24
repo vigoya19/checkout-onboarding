@@ -74,6 +74,25 @@ describe('local-storage helpers', () => {
     expect(loaded.pricing.deliveryFeeInCents).toBe(990000)
   })
 
+  it('normalizes fee values stored as strings', () => {
+    window.localStorage.setItem(
+      'checkout-onboarding:checkout',
+      JSON.stringify({
+        ...initialCheckoutState,
+        pricing: {
+          ...initialCheckoutState.pricing,
+          baseFeeInCents: '390000',
+          deliveryFeeInCents: '990000',
+        },
+      }),
+    )
+
+    const loaded = loadCheckoutState()
+
+    expect(loaded.pricing.baseFeeInCents).toBe(390000)
+    expect(loaded.pricing.deliveryFeeInCents).toBe(990000)
+  })
+
   it('clears invalid snapshots', () => {
     window.localStorage.setItem('checkout-onboarding:checkout', '{bad-json')
 
