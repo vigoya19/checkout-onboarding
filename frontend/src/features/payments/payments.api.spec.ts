@@ -10,7 +10,11 @@ jest.mock('@/shared/config/env', () => ({
 }))
 
 import { httpGet } from '@/shared/api/http-client'
-import { getAcceptanceTokens, tokenizeCard } from '@/features/payments/payments.api'
+import {
+  getAcceptanceTokens,
+  getCheckoutConfig,
+  tokenizeCard,
+} from '@/features/payments/payments.api'
 
 describe('payments.api', () => {
   beforeEach(() => {
@@ -24,6 +28,19 @@ describe('payments.api', () => {
       acceptanceToken: 'acc',
     })
     expect(httpGet).toHaveBeenCalledWith('/payments/acceptance-tokens')
+  })
+
+  it('loads checkout config from the backend', async () => {
+    ;(httpGet as jest.Mock).mockResolvedValue({
+      baseFeeInCents: 390000,
+      deliveryFeeInCents: 990000,
+    })
+
+    await expect(getCheckoutConfig()).resolves.toEqual({
+      baseFeeInCents: 390000,
+      deliveryFeeInCents: 990000,
+    })
+    expect(httpGet).toHaveBeenCalledWith('/payments/checkout-config')
   })
 
   it('tokenizes cards with Wompi', async () => {

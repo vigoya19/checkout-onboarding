@@ -15,6 +15,10 @@ jest.mock('@/features/catalog/components/ProductHero', () => ({
   }) => <div data-testid="hero">{product ? product.name : 'empty'}</div>,
 }))
 
+jest.mock('@/features/assistant/components/AssistantPanel', () => ({
+  AssistantPanel: () => <div data-testid="assistant-panel" />,
+}))
+
 jest.mock('@/features/checkout/components/CheckoutModal', () => ({
   CheckoutModal: () => <div data-testid="checkout-modal" />,
 }))
@@ -32,7 +36,6 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { ProductPage } from '@/features/catalog/pages/ProductPage'
 import { selectProduct } from '@/features/catalog/catalog.slice'
 import {
-  returnToCatalog,
   startCheckout,
 } from '@/features/checkout/checkout.slice'
 
@@ -44,6 +47,7 @@ describe('ProductPage', () => {
           id: 'prod_ps5',
           name: 'PlayStation 5',
           description: 'desc',
+          features: ['1 TB SSD', 'Soporte para 4K'],
           priceInCents: 299900000,
           currency: 'COP' as const,
           stock: 5,
@@ -60,9 +64,13 @@ describe('ProductPage', () => {
       transactionReference: null,
       isSubmittingPayment: false,
       paymentError: null,
-      draft: {
+      pricing: {
         baseFeeInCents: 390000,
         deliveryFeeInCents: 990000,
+        status: 'succeeded' as const,
+        errorMessage: null,
+      },
+      draft: {
         customerName: '',
         customerEmail: '',
         customerPhone: '',
@@ -95,10 +103,25 @@ describe('ProductPage', () => {
     render(<ProductPage />)
 
     expect(screen.getByTestId('hero')).toHaveTextContent('PlayStation 5')
-    fireEvent.click(screen.getByRole('button', { name: 'Seleccionada' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Comprar' }))
 
     expect(dispatch).toHaveBeenCalledWith(selectProduct('prod_ps5'))
     expect(dispatch).toHaveBeenCalledWith(startCheckout())
+  })
+
+  it('lets the user view a product without starting checkout', () => {
+    const dispatch = jest.fn()
+    ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
+    ;(useAppSelector as jest.Mock).mockImplementation((selector: (state: typeof baseState) => unknown) =>
+      selector(baseState),
+    )
+
+    render(<ProductPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Viendo' }))
+
+    expect(dispatch).toHaveBeenCalledWith(selectProduct('prod_ps5'))
+    expect(dispatch).not.toHaveBeenCalledWith(startCheckout())
   })
 
   it('renders the empty state when there are no products', () => {
@@ -116,7 +139,7 @@ describe('ProductPage', () => {
     render(<ProductPage />)
 
     expect(
-      screen.getByText('No hay productos para iniciar el checkout'),
+      screen.getByText('No hay productos disponibles para comprar'),
     ).toBeInTheDocument()
   })
 
@@ -162,7 +185,7 @@ describe('ProductPage', () => {
     expect(screen.getByTestId('final-status-panel')).toBeInTheDocument()
   })
 
-  it('loads products on idle and refreshes when returning to the catalog', () => {
+  it('loads products on idle', () => {
     const dispatch = jest.fn()
     ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
     ;(useAppSelector as jest.Mock).mockImplementation((selector: (state: typeof baseState) => unknown) =>
@@ -178,8 +201,27 @@ describe('ProductPage', () => {
     render(<ProductPage />)
 
     expect(dispatch).toHaveBeenCalledWith(expect.any(Function))
+  })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Volver al paso 1' }))
-    expect(dispatch).toHaveBeenCalledWith(returnToCatalog())
+  it('loads checkout config on idle', () => {
+    const dispatch = jest.fn()
+    ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
+    ;(useAppSelector as jest.Mock).mockImplementation((selector: (state: typeof baseState) => unknown) =>
+      selector({
+        ...baseState,
+        checkout: {
+          ...baseState.checkout,
+          pricing: {
+            ...baseState.checkout.pricing,
+            status: 'idle',
+          },
+        },
+      }),
+    )
+
+    render(<ProductPage />)
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 })

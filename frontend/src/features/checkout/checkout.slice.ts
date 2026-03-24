@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '@/app/providers/store'
+import { getCheckoutConfig } from '@/features/payments/payments.api'
 
 export type CheckoutResult = 'success' | 'failure' | 'pending' | null
 
@@ -10,9 +11,13 @@ export type CheckoutState = {
   transactionReference: string | null
   isSubmittingPayment: boolean
   paymentError: string | null
-  draft: {
+  pricing: {
     baseFeeInCents: number
     deliveryFeeInCents: number
+    status: 'idle' | 'loading' | 'succeeded' | 'failed'
+    errorMessage: string | null
+  }
+  draft: {
     customerName: string
     customerEmail: string
     customerPhone: string
@@ -37,9 +42,13 @@ export const initialCheckoutState: CheckoutState = {
   transactionReference: null,
   isSubmittingPayment: false,
   paymentError: null,
+  pricing: {
+    baseFeeInCents: 0,
+    deliveryFeeInCents: 0,
+    status: 'idle',
+    errorMessage: null,
+  },
   draft: {
-    baseFeeInCents: 390000,
-    deliveryFeeInCents: 990000,
     customerName: '',
     customerEmail: '',
     customerPhone: '',
@@ -56,6 +65,11 @@ export const initialCheckoutState: CheckoutState = {
     acceptedPersonalDataAuth: false,
   },
 }
+
+export const fetchCheckoutConfig = createAsyncThunk(
+  'checkout/fetchCheckoutConfig',
+  async () => getCheckoutConfig(),
+)
 
 const checkoutSlice = createSlice({
   name: 'checkout',
@@ -126,6 +140,24 @@ const checkoutSlice = createSlice({
       state.transactionReference = action.payload.transactionReference
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCheckoutConfig.pending, (state) => {
+        state.pricing.status = 'loading'
+        state.pricing.errorMessage = null
+      })
+      .addCase(fetchCheckoutConfig.fulfilled, (state, action) => {
+        state.pricing.status = 'succeeded'
+        state.pricing.errorMessage = null
+        state.pricing.baseFeeInCents = action.payload.baseFeeInCents
+        state.pricing.deliveryFeeInCents = action.payload.deliveryFeeInCents
+      })
+      .addCase(fetchCheckoutConfig.rejected, (state, action) => {
+        state.pricing.status = 'failed'
+        state.pricing.errorMessage =
+          action.error.message ?? 'No se pudo cargar la configuracion del checkout.'
+      })
+  },
 })
 
 export const {
@@ -142,6 +174,11 @@ export const checkoutReducer = checkoutSlice.reducer
 
 export const selectCheckoutStep = (state: RootState) => state.checkout.currentStep
 export const selectCheckoutDraft = (state: RootState) => state.checkout.draft
+export const selectCheckoutPricing = (state: RootState) => state.checkout.pricing
+export const selectCheckoutConfigStatus = (state: RootState) =>
+  state.checkout.pricing.status
+export const selectCheckoutConfigError = (state: RootState) =>
+  state.checkout.pricing.errorMessage
 export const selectCheckoutResult = (state: RootState) => state.checkout.result
 export const selectCheckoutStatusMessage = (state: RootState) =>
   state.checkout.statusMessage

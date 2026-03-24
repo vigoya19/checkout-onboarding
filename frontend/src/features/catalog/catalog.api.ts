@@ -6,6 +6,7 @@ type ProductResponse = {
   productId?: string
   name: string
   description: string
+  features?: string[]
   priceInCents: number
   currency: 'COP'
   stock: number
@@ -20,11 +21,22 @@ const featuredProductOrder = [
   'prod_nintendo_switch_2',
 ] as const
 
+function getProductOrderIndex(productId: string) {
+  const index = featuredProductOrder.indexOf(
+    productId as (typeof featuredProductOrder)[number],
+  )
+
+  return index >= 0 ? index : Number.MAX_SAFE_INTEGER
+}
+
 function toProduct(response: ProductResponse): Product {
+  const id = response.id ?? response.productId ?? ''
+
   return {
-    id: response.id ?? response.productId ?? '',
+    id,
     name: response.name,
     description: response.description,
+    features: response.features ?? [],
     priceInCents: response.priceInCents,
     currency: response.currency,
     stock: response.stock,
@@ -38,7 +50,6 @@ export async function listProducts(): Promise<Product[]> {
     .map(toProduct)
     .sort(
       (left, right) =>
-        featuredProductOrder.indexOf(left.id as (typeof featuredProductOrder)[number]) -
-        featuredProductOrder.indexOf(right.id as (typeof featuredProductOrder)[number]),
+        getProductOrderIndex(left.id) - getProductOrderIndex(right.id),
     )
 }

@@ -10,6 +10,7 @@ import {
   backToPayment,
   completeCheckout,
   failPaymentSubmission,
+  selectCheckoutPricing,
   selectIsSubmittingPayment,
   selectPaymentError,
   startPaymentSubmission,
@@ -24,6 +25,10 @@ import {
 type SummaryBackdropProps = {
   draft: CheckoutState['draft']
   product: Product
+  pricing: {
+    baseFeeInCents: number
+    deliveryFeeInCents: number
+  }
 }
 
 const paymentStages = [
@@ -32,13 +37,25 @@ const paymentStages = [
   'Confirmando el cobro con el banco',
 ] as const
 
-export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
+export function SummaryBackdrop({
+  draft,
+  product,
+  pricing,
+}: SummaryBackdropProps) {
   const dispatch = useAppDispatch()
   const isSubmittingPayment = useAppSelector(selectIsSubmittingPayment)
   const paymentError = useAppSelector(selectPaymentError)
+  const checkoutPricing = useAppSelector(selectCheckoutPricing)
   const [activeStageIndex, setActiveStageIndex] = useState(0)
+  const resolvedPricing = {
+    baseFeeInCents: pricing.baseFeeInCents || checkoutPricing.baseFeeInCents,
+    deliveryFeeInCents:
+      pricing.deliveryFeeInCents || checkoutPricing.deliveryFeeInCents,
+  }
   const total =
-    product.priceInCents + draft.baseFeeInCents + draft.deliveryFeeInCents
+    product.priceInCents +
+    resolvedPricing.baseFeeInCents +
+    resolvedPricing.deliveryFeeInCents
 
   useEffect(() => {
     if (!isSubmittingPayment) {
@@ -78,8 +95,8 @@ export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
         city: draft.city,
         department: draft.department,
         amountInCents: total,
-        baseFeeInCents: draft.baseFeeInCents,
-        deliveryFeeInCents: draft.deliveryFeeInCents,
+        baseFeeInCents: resolvedPricing.baseFeeInCents,
+        deliveryFeeInCents: resolvedPricing.deliveryFeeInCents,
         currency: product.currency,
       })
       const paymentTransaction = await payTransaction(
@@ -146,11 +163,18 @@ export function SummaryBackdrop({ draft, product }: SummaryBackdropProps) {
           </div>
           <div>
             <dt>Base fee</dt>
-            <dd>{formatCurrency(draft.baseFeeInCents, product.currency)}</dd>
+            <dd>
+              {formatCurrency(resolvedPricing.baseFeeInCents, product.currency)}
+            </dd>
           </div>
           <div>
             <dt>Delivery fee</dt>
-            <dd>{formatCurrency(draft.deliveryFeeInCents, product.currency)}</dd>
+            <dd>
+              {formatCurrency(
+                resolvedPricing.deliveryFeeInCents,
+                product.currency,
+              )}
+            </dd>
           </div>
           <div className="summary-total">
             <dt>Total a pagar</dt>

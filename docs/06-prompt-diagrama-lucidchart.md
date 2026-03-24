@@ -6,7 +6,7 @@ Usa este prompt en Lucidchart AI o en la herramienta de diagramacion que prefier
 Genera un diagrama de arquitectura cloud y de flujo para un proyecto llamado "Checkout Onboarding".
 
 Contexto general:
-- Es una aplicacion full stack para comprar una consola con tarjeta de credito.
+- Es una aplicacion full stack para comprar un producto con tarjeta de credito.
 - El frontend es una SPA en React con Redux Toolkit.
 - El backend es una API en NestJS desplegada como una sola AWS Lambda.
 - La infraestructura del backend esta definida con Serverless Framework.

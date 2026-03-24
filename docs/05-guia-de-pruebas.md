@@ -14,13 +14,13 @@ npm install
 
 Crea `frontend/.env` con base en:
 
-- [frontend/.env.example](c:/Users/quich/Documents/PruebaWompi/frontend/.env.example)
+- [frontend/.env.example](../frontend/.env.example)
 
 #### Backend
 
 Crea `backend/.env` con base en:
 
-- [backend/.env.example](c:/Users/quich/Documents/PruebaWompi/backend/.env.example)
+- [backend/.env.example](../backend/.env.example)
 
 ## 2. Ejecutar backend local
 
@@ -41,7 +41,7 @@ npm run dev
 ### Caso aprobado
 
 1. Abre la app.
-2. Selecciona una consola.
+2. Selecciona un producto.
 3. Llena el modal.
 4. Usa tarjeta `4242 4242 4242 4242`.
 5. Usa fecha futura y CVC `123`.
@@ -66,20 +66,21 @@ npm run dev
 
 Usa:
 
-- [checkout-onboarding.postman_collection.json](c:/Users/quich/Documents/PruebaWompi/postman/checkout-onboarding.postman_collection.json)
-- [checkout-onboarding.local.postman_environment.json](c:/Users/quich/Documents/PruebaWompi/postman/checkout-onboarding.local.postman_environment.json)
-- [checkout-onboarding.aws-dev.postman_environment.json](c:/Users/quich/Documents/PruebaWompi/postman/checkout-onboarding.aws-dev.postman_environment.json)
+- [checkout-onboarding.postman_collection.json](../postman/checkout-onboarding.postman_collection.json)
+- [checkout-onboarding.local.postman_environment.json](../postman/checkout-onboarding.local.postman_environment.json)
+- [checkout-onboarding.aws-dev.postman_environment.json](../postman/checkout-onboarding.aws-dev.postman_environment.json)
 
 ### Orden recomendado
 
 1. `Health`
 2. `List Products`
-3. `Get Acceptance Tokens`
-4. `Create Transaction`
-5. `Get Transaction`
-6. `Process Transaction Payment`
-7. `Get Transaction`
-8. `Simulate Wompi Webhook` si quieres probar el webhook manualmente
+3. `Get Checkout Config`
+4. `Get Acceptance Tokens`
+5. `Create Transaction`
+6. `Get Transaction`
+7. `Process Transaction Payment`
+8. `Get Transaction`
+9. `Simulate Wompi Webhook` si quieres probar el webhook manualmente
 
 ## 6. Ejecutar pruebas automaticas
 
@@ -130,6 +131,7 @@ Prueba:
 
 - `GET /api/health`
 - `GET /api/products`
+- `GET /api/payments/checkout-config`
 - `GET /api/payments/acceptance-tokens`
 
 ## 10. Checklist final

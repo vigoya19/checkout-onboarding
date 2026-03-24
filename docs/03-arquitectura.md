@@ -9,7 +9,9 @@ La solucion usa un monolito modular serverless:
 - persistencia DynamoDB
 - pagos integrados con Wompi Sandbox
 
-No se usan microservicios ni colas para este alcance.
+## Diagrama
+
+![Diagrama de arquitectura](./DiagramaArquietctura.png)
 
 ## Componentes
 
@@ -58,7 +60,7 @@ React SPA
 
 ```text
 1. Frontend consulta productos
-2. Usuario selecciona consola
+2. Usuario selecciona producto
 3. Frontend consulta acceptance tokens
 4. Frontend tokeniza la tarjeta con Wompi
 5. Frontend crea la transaccion local en backend
@@ -105,7 +107,7 @@ Se resolvio con `Redux + localStorage` en frontend. Se elimino `checkout session
 
 La infraestructura del backend esta definida en:
 
-- [serverless.yml](c:/Users/quich/Documents/PruebaWompi/backend/serverless.yml)
+- [serverless.yml](../backend/serverless.yml)
 
 Configuracion principal:
 
@@ -121,10 +123,3 @@ Configuracion principal:
 - desacopla frontend, backend y proveedor de pago
 - permite pruebas unitarias por modulo
 - soporta stock y fulfillment reales
-
-## Limitaciones deliberadas
-
-- no hay cola ni procesamiento asincrono con SQS
-- no hay microservicios
-- no hay Swagger; se entrega Postman
-- el frontend se deja listo para despliegue, pero la infraestructura definida en codigo es principalmente para backend

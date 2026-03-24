@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Soportar la compra de una consola con tarjeta de credito, integrando Wompi Sandbox, calculo de fees, actualizacion de stock y persistencia del estado de la transaccion.
+Soportar la compra de un producto con tarjeta de credito, integrando Wompi Sandbox, calculo de fees, actualizacion de stock y persistencia del estado de la transaccion.
 
 ## Actores
 
@@ -14,7 +14,7 @@ Soportar la compra de una consola con tarjeta de credito, integrando Wompi Sandb
 
 ### Descripcion
 
-El cliente entra a la aplicacion y visualiza las consolas disponibles con precio y stock.
+El cliente entra a la aplicacion y visualiza los productos disponibles con precio y stock.
 
 ### Entrada
 
@@ -28,7 +28,7 @@ El cliente entra a la aplicacion y visualiza las consolas disponibles con precio
 
 ### Descripcion
 
-El cliente escoge una consola y arranca el flujo de checkout.
+El cliente escoge un producto y arranca el flujo de checkout.
 
 ### Resultado
 

@@ -1,0 +1,11 @@
+{
+  "message": "¿Que incluye el total de la compra?",
+  "productName": "PlayStation 5",
+  "productDescription": "Consola PS5 de nueva generacion con almacenamiento de 1 TB y soporte para juego en 4K.",
+  "features": ["1 TB SSD", "Salida 4K", "Control DualSense"],
+  "currentStep": 1,
+  "priceInCents": 299900000,
+  "baseFeeInCents": 390000,
+  "deliveryFeeInCents": 990000,
+  "currency": "COP"
+}

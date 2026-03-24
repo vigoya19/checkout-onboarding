@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { AssistantPanel } from '@/features/assistant/components/AssistantPanel'
 import { ProductHero } from '@/features/catalog/components/ProductHero'
+import { ProductImage } from '@/features/catalog/components/ProductImage'
 import {
   fetchProducts,
   selectCatalogErrorMessage,
@@ -10,8 +12,12 @@ import {
   selectSelectedProduct,
 } from '@/features/catalog/catalog.slice'
 import {
+  fetchCheckoutConfig,
+  selectCheckoutConfigError,
+  selectCheckoutConfigStatus,
   returnToCatalog,
   selectCheckoutDraft,
+  selectCheckoutPricing,
   selectCheckoutResult,
   selectCheckoutStatusMessage,
   selectCheckoutStep,
@@ -30,14 +36,59 @@ const steps = [
   'Estado final',
 ] as const
 
+function getCatalogStatusTitle(
+  status: 'idle' | 'loading' | 'succeeded' | 'failed',
+  productsCount: number,
+) {
+  if (status === 'loading') {
+    return 'Cargando productos desde la API'
+  }
+
+  if (status === 'failed') {
+    return 'No se pudo cargar el catalogo'
+  }
+
+  return productsCount > 0
+    ? 'Catalogo cargado desde backend'
+    : 'No hay productos disponibles'
+}
+
+function getPaymentStatusTitle(
+  status: 'idle' | 'loading' | 'succeeded' | 'failed',
+) {
+  if (status === 'loading') {
+    return 'Estamos preparando los costos de la compra'
+  }
+
+  if (status === 'failed') {
+    return 'No se pudieron cargar los costos de la compra'
+  }
+
+  return 'Preparando la informacion de pago'
+}
+
+function getBuyButtonLabel(
+  status: 'idle' | 'loading' | 'succeeded' | 'failed',
+) {
+  if (status === 'loading') {
+    return 'Preparando compra...'
+  }
+
+  return 'Comprar'
+}
+
 export function ProductPage() {
   const dispatch = useAppDispatch()
+  const pendingCheckoutProductIdRef = useRef<string | null>(null)
   const product = useAppSelector(selectSelectedProduct)
   const products = useAppSelector(selectCatalogProducts)
   const status = useAppSelector(selectCatalogStatus)
   const errorMessage = useAppSelector(selectCatalogErrorMessage)
   const checkoutStep = useAppSelector(selectCheckoutStep)
   const checkoutDraft = useAppSelector(selectCheckoutDraft)
+  const checkoutPricing = useAppSelector(selectCheckoutPricing)
+  const checkoutConfigStatus = useAppSelector(selectCheckoutConfigStatus)
+  const checkoutConfigError = useAppSelector(selectCheckoutConfigError)
   const checkoutResult = useAppSelector(selectCheckoutResult)
   const checkoutStatusMessage = useAppSelector(selectCheckoutStatusMessage)
   const checkoutTransactionReference = useAppSelector(
@@ -50,12 +101,43 @@ export function ProductPage() {
     }
   }, [dispatch, status])
 
+  useEffect(() => {
+    if (checkoutConfigStatus === 'idle') {
+      void dispatch(fetchCheckoutConfig())
+    }
+  }, [checkoutConfigStatus, dispatch])
+
+  useEffect(() => {
+    const pendingCheckoutProductId = pendingCheckoutProductIdRef.current
+
+    if (!pendingCheckoutProductId || checkoutConfigStatus !== 'succeeded') {
+      return
+    }
+
+    dispatch(selectProduct(pendingCheckoutProductId))
+    dispatch(startCheckout())
+    pendingCheckoutProductIdRef.current = null
+  }, [checkoutConfigStatus, dispatch])
+
   const handleBuyProduct = (productId: string) => {
+    if (checkoutConfigStatus !== 'succeeded') {
+      pendingCheckoutProductIdRef.current = productId
+      dispatch(selectProduct(productId))
+      void dispatch(fetchCheckoutConfig())
+      return
+    }
+
+    pendingCheckoutProductIdRef.current = null
     dispatch(selectProduct(productId))
     dispatch(startCheckout())
   }
 
+  const handleViewProduct = (productId: string) => {
+    dispatch(selectProduct(productId))
+  }
+
   const handleReturnToCatalog = () => {
+    pendingCheckoutProductIdRef.current = null
     dispatch(returnToCatalog())
     void dispatch(fetchProducts())
   }
@@ -68,26 +150,26 @@ export function ProductPage() {
         <article className="card flow-card">
           <div className="section-heading">
             <p className="eyebrow">Catalogo</p>
-            <h2>Escoge una consola y arranca el checkout</h2>
+            <h2>Explora el catalogo y compra cuando quieras</h2>
             <p className="section-copy">
-              Elige un producto, presiona comprar y pasa directo al flujo de pago
-              con tarjeta y entrega.
+              Puedes ver el detalle de cualquier producto y, cuando estes listo,
+              continuar con el pago con tarjeta y los datos de entrega.
             </p>
           </div>
 
           <div className="status-panel">
             <span className="label">Catalogo</span>
-            <strong>
-              {status === 'loading'
-                ? 'Cargando productos desde la API'
-                : status === 'failed'
-                  ? 'No se pudo cargar el catalogo'
-                  : products.length > 0
-                    ? 'Catalogo cargado desde backend'
-                    : 'No hay productos disponibles'}
-            </strong>
+            <strong>{getCatalogStatusTitle(status, products.length)}</strong>
             {errorMessage ? <p>{errorMessage}</p> : null}
           </div>
+
+          {checkoutConfigStatus !== 'succeeded' ? (
+            <div className="status-panel">
+              <span className="label">Pago</span>
+              <strong>{getPaymentStatusTitle(checkoutConfigStatus)}</strong>
+              {checkoutConfigError ? <p>{checkoutConfigError}</p> : null}
+            </div>
+          ) : null}
 
           {products.length > 0 ? (
             <div className="product-list">
@@ -100,10 +182,17 @@ export function ProductPage() {
                     className={isSelected ? 'product-card selected' : 'product-card'}
                   >
                     <div className="product-card-accent" />
+                    <div className="product-card-image-shell">
+                      <ProductImage
+                        className="product-card-image"
+                        key={catalogProduct.name}
+                        productName={catalogProduct.name}
+                      />
+                    </div>
                     <div className="product-card-copy">
                       <div className="product-card-header">
                         <div>
-                          <p className="product-card-kicker">Consola disponible</p>
+                          <p className="product-card-kicker">Producto disponible</p>
                           <h3>{catalogProduct.name}</h3>
                         </div>
                         <span className="stock-pill">
@@ -125,13 +214,23 @@ export function ProductPage() {
                         </strong>
                       </div>
 
-                      <button
-                        className={isSelected ? 'ghost-button' : 'primary-button'}
-                        onClick={() => handleBuyProduct(catalogProduct.id)}
-                        type="button"
-                      >
-                        {isSelected ? 'Seleccionada' : 'Comprar'}
-                      </button>
+                      <div className="product-card-actions">
+                        <button
+                          className="ghost-button"
+                          onClick={() => handleViewProduct(catalogProduct.id)}
+                          type="button"
+                        >
+                          {isSelected ? 'Viendo' : 'Ver'}
+                        </button>
+
+                        <button
+                          className="primary-button"
+                          onClick={() => handleBuyProduct(catalogProduct.id)}
+                          type="button"
+                        >
+                          {getBuyButtonLabel(checkoutConfigStatus)}
+                        </button>
+                      </div>
                     </div>
                   </article>
                 )
@@ -140,7 +239,7 @@ export function ProductPage() {
           ) : (
             <div className="status-panel">
               <span className="label">Catalogo</span>
-              <strong>No hay productos para iniciar el checkout</strong>
+              <strong>No hay productos disponibles para comprar</strong>
               <p>Si el backend esta arriba, vuelve a recargar la pantalla.</p>
             </div>
           )}
@@ -172,73 +271,88 @@ export function ProductPage() {
 
           <div className="flow-actions">
             <button
-              className="ghost-button"
-              onClick={() => dispatch(returnToCatalog())}
-              type="button"
-            >
-              Volver al paso 1
-            </button>
-            <button
               className="primary-button"
               disabled={!product}
-              onClick={() => dispatch(startCheckout())}
+              onClick={() => {
+                if (!product) {
+                  return
+                }
+
+                void handleBuyProduct(product.id)
+              }}
               type="button"
             >
-              {product ? `Comprar ${product.name}` : 'Checkout no disponible'}
+              {!product
+                ? 'Compra no disponible'
+                : getBuyButtonLabel(checkoutConfigStatus) ===
+                    'Preparando compra...'
+                  ? 'Preparando compra...'
+                  : `Comprar ${product.name}`}
             </button>
           </div>
         </article>
 
-        <aside className="card summary-card">
-          <div className="section-heading">
-            <p className="eyebrow">Flujo activo</p>
-            <h2>Resumen del checkout</h2>
-            <p className="section-copy">
-              Esta columna deja claro en qué parte del onboarding va el cliente.
-            </p>
-          </div>
+        <aside className="summary-column">
+          <section className="card summary-card">
+            <div className="section-heading">
+              <p className="eyebrow">Flujo activo</p>
+              <h2>Resumen de la compra</h2>
+              <p className="section-copy">
+                Esta columna deja claro en qué parte del proceso de compra va el cliente.
+              </p>
+            </div>
 
-          <dl className="summary-list">
-            <div>
-              <dt>Paso actual</dt>
-              <dd>{checkoutStep} de 4</dd>
-            </div>
-            <div>
-              <dt>Total producto</dt>
-              <dd>
-                {product
-                  ? formatCurrency(product.priceInCents, product.currency)
-                  : 'Sin producto'}
-              </dd>
-            </div>
-            <div>
-              <dt>Fee base</dt>
-              <dd>
-                {formatCurrency(
-                  checkoutDraft.baseFeeInCents,
-                  product?.currency ?? 'COP',
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt>Delivery fee</dt>
-              <dd>
-                {formatCurrency(
-                  checkoutDraft.deliveryFeeInCents,
-                  product?.currency ?? 'COP',
-                )}
-              </dd>
-            </div>
-          </dl>
+            <dl className="summary-list">
+              <div>
+                <dt>Paso actual</dt>
+                <dd>{checkoutStep} de 4</dd>
+              </div>
+              <div>
+                <dt>Total producto</dt>
+                <dd>
+                  {product
+                    ? formatCurrency(product.priceInCents, product.currency)
+                    : 'Sin producto'}
+                </dd>
+              </div>
+              <div>
+                <dt>Fee base</dt>
+                <dd>
+                  {formatCurrency(
+                    checkoutPricing.baseFeeInCents,
+                    product?.currency ?? 'COP',
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>Delivery fee</dt>
+                <dd>
+                  {formatCurrency(
+                    checkoutPricing.deliveryFeeInCents,
+                    product?.currency ?? 'COP',
+                  )}
+                </dd>
+              </div>
+            </dl>
 
-          <div className="status-panel">
-            <span className="label">Siguiente paso</span>
-            <strong>
-              {product && checkoutStep >= 2
-                ? 'Abrir modal de pago y datos de entrega'
-                : 'Selecciona una consola para iniciar el flujo'}
-            </strong>
-          </div>
+            <div className="status-panel">
+              <span className="label">Siguiente paso</span>
+              <strong>
+                {product && checkoutStep >= 2
+                  ? 'Completar pago y datos de entrega'
+                  : checkoutConfigStatus === 'succeeded'
+                    ? 'Selecciona un producto para continuar'
+                    : 'Preparando la compra'}
+              </strong>
+            </div>
+          </section>
+
+          <AssistantPanel
+            product={product}
+            currentStep={checkoutStep}
+            baseFeeInCents={checkoutPricing.baseFeeInCents}
+            deliveryFeeInCents={checkoutPricing.deliveryFeeInCents}
+          />
         </aside>
       </section>
 
@@ -250,7 +364,11 @@ export function ProductPage() {
       ) : null}
 
       {checkoutStep === 3 && product ? (
-        <SummaryBackdrop draft={checkoutDraft} product={product} />
+        <SummaryBackdrop
+          draft={checkoutDraft}
+          pricing={checkoutPricing}
+          product={product}
+        />
       ) : null}
 
       {checkoutStep === 4 && checkoutResult ? (

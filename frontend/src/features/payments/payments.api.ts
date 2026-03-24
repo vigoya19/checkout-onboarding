@@ -8,6 +8,11 @@ type AcceptanceTokensResponse = {
   acceptPersonalAuthPermalink: string | null
 }
 
+type CheckoutConfigResponse = {
+  baseFeeInCents: number
+  deliveryFeeInCents: number
+}
+
 type WompiCardTokenResponse = {
   status: string
   data: {
@@ -18,9 +23,14 @@ type WompiCardTokenResponse = {
 }
 
 export type WompiAcceptanceTokens = AcceptanceTokensResponse
+export type CheckoutConfig = CheckoutConfigResponse
 
 export async function getAcceptanceTokens() {
   return httpGet<AcceptanceTokensResponse>('/payments/acceptance-tokens')
+}
+
+export async function getCheckoutConfig() {
+  return httpGet<CheckoutConfigResponse>('/payments/checkout-config')
 }
 
 export async function tokenizeCard(input: {

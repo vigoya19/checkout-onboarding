@@ -18,22 +18,50 @@ function normalizeFeeAmount(value: number, fallback: number) {
   return value
 }
 
-function normalizeCheckoutState(snapshot: CheckoutState): CheckoutState {
+type LegacyCheckoutSnapshot = Partial<CheckoutState> & {
+  pricing?: Partial<CheckoutState['pricing']>
+  draft?: Partial<CheckoutState['draft']> & {
+    baseFeeInCents?: number
+    deliveryFeeInCents?: number
+  }
+}
+
+function normalizeCheckoutState(snapshot: LegacyCheckoutSnapshot): CheckoutState {
+  const legacyBaseFee = snapshot.draft?.baseFeeInCents
+  const legacyDeliveryFee = snapshot.draft?.deliveryFeeInCents
+  const normalizedPricingBaseFee = normalizeFeeAmount(
+    snapshot.pricing?.baseFeeInCents ??
+      initialCheckoutState.pricing.baseFeeInCents,
+    initialCheckoutState.pricing.baseFeeInCents,
+  )
+  const normalizedPricingDeliveryFee = normalizeFeeAmount(
+    snapshot.pricing?.deliveryFeeInCents ??
+      initialCheckoutState.pricing.deliveryFeeInCents,
+    initialCheckoutState.pricing.deliveryFeeInCents,
+  )
+  const normalizedLegacyBaseFee = normalizeFeeAmount(
+    legacyBaseFee ?? initialCheckoutState.pricing.baseFeeInCents,
+    initialCheckoutState.pricing.baseFeeInCents,
+  )
+  const normalizedLegacyDeliveryFee = normalizeFeeAmount(
+    legacyDeliveryFee ?? initialCheckoutState.pricing.deliveryFeeInCents,
+    initialCheckoutState.pricing.deliveryFeeInCents,
+  )
+
   return {
     ...initialCheckoutState,
     ...snapshot,
+    pricing: {
+      ...initialCheckoutState.pricing,
+      ...snapshot.pricing,
+      baseFeeInCents:
+        normalizedPricingBaseFee || normalizedLegacyBaseFee,
+      deliveryFeeInCents:
+        normalizedPricingDeliveryFee || normalizedLegacyDeliveryFee,
+    },
     draft: {
       ...initialCheckoutState.draft,
       ...snapshot.draft,
-      baseFeeInCents: normalizeFeeAmount(
-        snapshot.draft?.baseFeeInCents ?? initialCheckoutState.draft.baseFeeInCents,
-        initialCheckoutState.draft.baseFeeInCents,
-      ),
-      deliveryFeeInCents: normalizeFeeAmount(
-        snapshot.draft?.deliveryFeeInCents ??
-          initialCheckoutState.draft.deliveryFeeInCents,
-        initialCheckoutState.draft.deliveryFeeInCents,
-      ),
     },
   }
 }
@@ -46,7 +74,7 @@ export function loadCheckoutState(): CheckoutState {
   }
 
   try {
-    return normalizeCheckoutState(JSON.parse(snapshot) as CheckoutState)
+    return normalizeCheckoutState(JSON.parse(snapshot) as LegacyCheckoutSnapshot)
   } catch {
     window.localStorage.removeItem(CHECKOUT_STORAGE_KEY)
 

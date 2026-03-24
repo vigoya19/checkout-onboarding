@@ -3,6 +3,7 @@ import {
   checkoutReducer,
   completeCheckout,
   failPaymentSubmission,
+  fetchCheckoutConfig,
   initialCheckoutState,
   openSummary,
   returnToCatalog,
@@ -83,5 +84,27 @@ describe('checkout.slice', () => {
     expect(state.transactionReference).toBeNull()
     expect(state.isSubmittingPayment).toBe(false)
     expect(state.paymentError).toBeNull()
+  })
+
+  it('stores checkout config loaded from backend', () => {
+    const pending = checkoutReducer(
+      undefined,
+      fetchCheckoutConfig.pending('', undefined),
+    )
+    const fulfilled = checkoutReducer(
+      pending,
+      fetchCheckoutConfig.fulfilled(
+        {
+          baseFeeInCents: 390000,
+          deliveryFeeInCents: 990000,
+        },
+        '',
+        undefined,
+      ),
+    )
+
+    expect(fulfilled.pricing.status).toBe('succeeded')
+    expect(fulfilled.pricing.baseFeeInCents).toBe(390000)
+    expect(fulfilled.pricing.deliveryFeeInCents).toBe(990000)
   })
 })

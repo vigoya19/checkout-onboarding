@@ -14,6 +14,11 @@ const DEFAULT_PRODUCTS = [
     name: 'PlayStation 4',
     description:
       'Consola PS4 Slim de 1 TB ideal para catalogo legacy y juegos de generacion anterior.',
+    features: [
+      '1 TB de almacenamiento',
+      'Edicion Slim',
+      'Catalogo legacy de PS4',
+    ],
     priceInCents: 139989000,
     currency: 'COP',
     stock: 8,
@@ -23,6 +28,7 @@ const DEFAULT_PRODUCTS = [
     name: 'PlayStation 5',
     description:
       'Consola PS5 de nueva generacion con almacenamiento de 1 TB y soporte para juego en 4K.',
+    features: ['1 TB SSD', 'Soporte para 4K', 'DualSense incluido'],
     priceInCents: 299900000,
     currency: 'COP',
     stock: 6,
@@ -32,6 +38,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Xbox Series X',
     description:
       'Consola Xbox Series X de 1 TB para juego en 4K con alto rendimiento.',
+    features: ['1 TB SSD', 'Rendimiento 4K', 'Ray tracing'],
     priceInCents: 309990000,
     currency: 'COP',
     stock: 5,
@@ -41,6 +48,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Xbox Series S',
     description:
       'Consola Xbox Series S compacta con 512 GB y excelente relacion costo-rendimiento.',
+    features: ['512 GB SSD', 'Formato compacto', 'Excelente costo-rendimiento'],
     priceInCents: 194990000,
     currency: 'COP',
     stock: 9,
@@ -50,6 +58,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Nintendo Switch',
     description:
       'Consola hibrida Nintendo Switch con Joy-Con y bundle digital de Mario Kart 8.',
+    features: ['Modo portatil y dock', 'Joy-Con incluidos', 'Bundle digital'],
     priceInCents: 159900000,
     currency: 'COP',
     stock: 12,
@@ -59,6 +68,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Nintendo Switch 2',
     description:
       'Nueva Nintendo Switch 2 con mejoras de rendimiento y precio oficial sugerido en Colombia.',
+    features: ['Nueva generacion', 'Mejoras de rendimiento', 'Portatil + dock'],
     priceInCents: 285990000,
     currency: 'COP',
     stock: 7,

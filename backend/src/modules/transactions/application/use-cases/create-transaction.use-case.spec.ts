@@ -35,7 +35,7 @@ describe('CreateTransactionUseCase', () => {
         findById: jest
           .fn()
           .mockResolvedValue(
-            new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 0),
+            new Product('prod-1', 'PS5', 'desc', ['feat'], 1000, 'COP', 0),
           ),
       } as never,
       { create: jest.fn() } as never,
@@ -55,7 +55,7 @@ describe('CreateTransactionUseCase', () => {
         findById: jest
           .fn()
           .mockResolvedValue(
-            new Product('prod-1', 'PS5', 'desc', 1000, 'COP', 2),
+            new Product('prod-1', 'PS5', 'desc', ['feat'], 1000, 'COP', 2),
           ),
       } as never,
       { create } as never,

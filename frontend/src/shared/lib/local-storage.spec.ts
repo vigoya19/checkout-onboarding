@@ -28,8 +28,8 @@ describe('local-storage helpers', () => {
 
     const loaded = loadCheckoutState()
 
-    expect(loaded.draft.baseFeeInCents).toBe(390000)
-    expect(loaded.draft.deliveryFeeInCents).toBe(990000)
+    expect(loaded.pricing.baseFeeInCents).toBe(390000)
+    expect(loaded.pricing.deliveryFeeInCents).toBe(990000)
   })
 
   it('falls back when stored fees are invalid', () => {
@@ -47,11 +47,11 @@ describe('local-storage helpers', () => {
 
     const loaded = loadCheckoutState()
 
-    expect(loaded.draft.baseFeeInCents).toBe(
-      initialCheckoutState.draft.baseFeeInCents,
+    expect(loaded.pricing.baseFeeInCents).toBe(
+      initialCheckoutState.pricing.baseFeeInCents,
     )
-    expect(loaded.draft.deliveryFeeInCents).toBe(
-      initialCheckoutState.draft.deliveryFeeInCents,
+    expect(loaded.pricing.deliveryFeeInCents).toBe(
+      initialCheckoutState.pricing.deliveryFeeInCents,
     )
   })
 
@@ -60,8 +60,8 @@ describe('local-storage helpers', () => {
       'checkout-onboarding:checkout',
       JSON.stringify({
         ...initialCheckoutState,
-        draft: {
-          ...initialCheckoutState.draft,
+        pricing: {
+          ...initialCheckoutState.pricing,
           baseFeeInCents: 390000,
           deliveryFeeInCents: 990000,
         },
@@ -70,8 +70,8 @@ describe('local-storage helpers', () => {
 
     const loaded = loadCheckoutState()
 
-    expect(loaded.draft.baseFeeInCents).toBe(390000)
-    expect(loaded.draft.deliveryFeeInCents).toBe(990000)
+    expect(loaded.pricing.baseFeeInCents).toBe(390000)
+    expect(loaded.pricing.deliveryFeeInCents).toBe(990000)
   })
 
   it('clears invalid snapshots', () => {

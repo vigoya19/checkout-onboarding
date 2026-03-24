@@ -3,14 +3,11 @@ service: checkout-onboarding-api
 frameworkVersion: '3'
 useDotenv: true
 
-plugins:
-  - serverless-plugin-monorepo
-
 provider:
   name: aws
   runtime: nodejs20.x
   stage: ${opt:stage, 'dev'}
-  region: ${opt:region, env:AWS_REGION, 'eu-west-1'}
+  region: ${opt:region, env:AWS_REGION, 'us-east-1'}
   logRetentionInDays: 14
   httpApi:
     cors:
@@ -38,6 +35,11 @@ provider:
     WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
     WOMPI_INTEGRITY_SECRET: ${env:WOMPI_INTEGRITY_SECRET}
     WOMPI_EVENTS_SECRET: ${env:WOMPI_EVENTS_SECRET}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY, ''}
+    OPENAI_MODEL: ${env:OPENAI_MODEL, 'gpt-5-mini'}
+    OPENAI_TIMEOUT_MS: ${env:OPENAI_TIMEOUT_MS, '20000'}
+    CHECKOUT_BASE_FEE_IN_CENTS: ${env:CHECKOUT_BASE_FEE_IN_CENTS, '390000'}
+    CHECKOUT_DELIVERY_FEE_IN_CENTS: ${env:CHECKOUT_DELIVERY_FEE_IN_CENTS, '990000'}
   iam:
     role:
       statements:
@@ -57,6 +59,7 @@ provider:
 package:
   patterns:
     - dist/**
+    - node_modules/**
     - package.json
     - package-lock.json
     - '!src/**'

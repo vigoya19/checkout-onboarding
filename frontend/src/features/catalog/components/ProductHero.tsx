@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/shared/lib/currency'
 import type { Product } from '@/shared/types/product'
+import { ProductImage } from '@/features/catalog/components/ProductImage'
 
 type ProductHeroProps = {
   product: Product | null
@@ -19,8 +20,8 @@ export function ProductHero({ product }: ProductHeroProps) {
             <p className="eyebrow">Catalogo</p>
             <h1>Sin productos disponibles</h1>
             <p className="description">
-              Cuando la API devuelva productos sembrados, el checkout quedara
-              habilitado desde aqui.
+              Cuando la API devuelva productos sembrados, la compra estara
+              disponible desde aqui.
             </p>
           </div>
 
@@ -60,14 +61,43 @@ export function ProductHero({ product }: ProductHeroProps) {
               <strong>{product.stock} unidades</strong>
             </div>
           </div>
+
+          <div className="hero-details-grid">
+            <div className="hero-detail-card">
+              <span className="label">Descripcion</span>
+              <p>{product.description}</p>
+            </div>
+
+            <div className="hero-detail-card">
+              <span className="label">Caracteristicas</span>
+              {product.features.length > 0 ? (
+                <ul className="hero-feature-list">
+                  {product.features.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Las caracteristicas del producto estaran disponibles aqui.</p>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="hero-showcase">
           <div className="hero-console-glow" />
           <div className="hero-console-card">
+            <div className="hero-product-image-shell">
+              <ProductImage
+                className="hero-product-image"
+                key={product.name}
+                productName={product.name}
+              />
+            </div>
             <span className="hero-console-tag">Compra directa</span>
             <strong>{product.name}</strong>
-            <p>Checkout de un solo producto, sin carrito, como pide la prueba.</p>
+            <p>
+              Compra de un solo producto con pago guiado y datos de entrega.
+            </p>
 
             <div className="hero-console-specs">
               <div>

@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Este proyecto implementa un checkout onboarding para compra de consolas usando Wompi Sandbox. La solucion cumple el flujo funcional principal del reto:
+Este proyecto implementa un checkout onboarding para compra de un producto usando Wompi Sandbox. La solucion cumple el flujo funcional principal del reto:
 
 - catalogo con productos dummy
 - compra de un producto
@@ -51,10 +51,10 @@ Este proyecto implementa un checkout onboarding para compra de consolas usando W
 
 ## Artefactos principales
 
-- Codigo frontend en [frontend](c:/Users/quich/Documents/PruebaWompi/frontend)
-- Codigo backend en [backend](c:/Users/quich/Documents/PruebaWompi/backend)
-- Coleccion Postman en [postman](c:/Users/quich/Documents/PruebaWompi/postman)
-- Documentacion en [docs](c:/Users/quich/Documents/PruebaWompi/docs)
+- Codigo frontend en [frontend](../frontend)
+- Codigo backend en [backend](../backend)
+- Coleccion Postman en [postman](../postman)
+- Documentacion en [docs](../docs)
 
 ## Scripts importantes
 

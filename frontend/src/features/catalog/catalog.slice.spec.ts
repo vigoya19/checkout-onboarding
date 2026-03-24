@@ -27,6 +27,7 @@ describe('catalog.slice', () => {
             id: 'prod_ps5',
             name: 'PS5',
             description: 'desc',
+            features: ['feat'],
             priceInCents: 1,
             currency: 'COP',
             stock: 2,

@@ -18,7 +18,15 @@ describe('InMemoryProductRepository', () => {
 
   it('saves a product and lets it be queried later', async () => {
     const repository = new InMemoryProductRepository();
-    const product = new Product('custom', 'Custom', 'desc', 100, 'COP', 2);
+    const product = new Product(
+      'custom',
+      'Custom',
+      'desc',
+      ['feat'],
+      100,
+      'COP',
+      2,
+    );
 
     await repository.save(product);
 

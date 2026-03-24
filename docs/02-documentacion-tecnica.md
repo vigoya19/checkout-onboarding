@@ -21,7 +21,7 @@ El repositorio usa `npm workspaces`.
 
 Archivo clave:
 
-- [package.json](c:/Users/quich/Documents/PruebaWompi/package.json)
+- [package.json](../package.json)
 
 ## Frontend
 
@@ -50,6 +50,7 @@ frontend/src
 ### Responsabilidades
 
 - Cargar catalogo desde backend
+- Cargar configuracion del checkout desde backend
 - Mantener producto seleccionado en Redux
 - Persistir avance del checkout en `localStorage`
 - Solicitar tokens de aceptacion
@@ -60,12 +61,12 @@ frontend/src
 
 ### Archivos clave
 
-- [ProductPage.tsx](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/catalog/pages/ProductPage.tsx)
-- [CheckoutModal.tsx](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/checkout/components/CheckoutModal.tsx)
-- [SummaryBackdrop.tsx](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/checkout/components/SummaryBackdrop.tsx)
-- [FinalStatusPanel.tsx](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/checkout/components/FinalStatusPanel.tsx)
-- [catalog.slice.ts](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/catalog/catalog.slice.ts)
-- [checkout.slice.ts](c:/Users/quich/Documents/PruebaWompi/frontend/src/features/checkout/checkout.slice.ts)
+- [ProductPage.tsx](../frontend/src/features/catalog/pages/ProductPage.tsx)
+- [CheckoutModal.tsx](../frontend/src/features/checkout/components/CheckoutModal.tsx)
+- [SummaryBackdrop.tsx](../frontend/src/features/checkout/components/SummaryBackdrop.tsx)
+- [FinalStatusPanel.tsx](../frontend/src/features/checkout/components/FinalStatusPanel.tsx)
+- [catalog.slice.ts](../frontend/src/features/catalog/catalog.slice.ts)
+- [checkout.slice.ts](../frontend/src/features/checkout/checkout.slice.ts)
 
 ## Backend
 
@@ -105,6 +106,7 @@ backend/src
 - `GET /api/health`
 - `GET /api/products`
 - `GET /api/payments/acceptance-tokens`
+- `GET /api/payments/checkout-config`
 - `POST /api/transactions`
 - `GET /api/transactions/:transactionId`
 - `POST /api/transactions/:transactionId/pay`
@@ -112,13 +114,13 @@ backend/src
 
 ### Archivos clave
 
-- [transactions.controller.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/transactions/transactions.controller.ts)
-- [process-transaction-payment.use-case.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/transactions/application/use-cases/process-transaction-payment.use-case.ts)
-- [get-transaction.use-case.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/transactions/application/use-cases/get-transaction.use-case.ts)
-- [handle-wompi-webhook.use-case.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/transactions/application/use-cases/handle-wompi-webhook.use-case.ts)
-- [fulfill-approved-transaction.use-case.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/transactions/application/use-cases/fulfill-approved-transaction.use-case.ts)
-- [wompi.gateway.ts](c:/Users/quich/Documents/PruebaWompi/backend/src/modules/payments/infrastructure/gateways/wompi.gateway.ts)
-- [serverless.yml](c:/Users/quich/Documents/PruebaWompi/backend/serverless.yml)
+- [transactions.controller.ts](../backend/src/modules/transactions/transactions.controller.ts)
+- [process-transaction-payment.use-case.ts](../backend/src/modules/transactions/application/use-cases/process-transaction-payment.use-case.ts)
+- [get-transaction.use-case.ts](../backend/src/modules/transactions/application/use-cases/get-transaction.use-case.ts)
+- [handle-wompi-webhook.use-case.ts](../backend/src/modules/transactions/application/use-cases/handle-wompi-webhook.use-case.ts)
+- [fulfill-approved-transaction.use-case.ts](../backend/src/modules/transactions/application/use-cases/fulfill-approved-transaction.use-case.ts)
+- [wompi.gateway.ts](../backend/src/modules/payments/infrastructure/gateways/wompi.gateway.ts)
+- [serverless.yml](../backend/serverless.yml)
 
 ## Modelo de datos
 
@@ -127,6 +129,7 @@ backend/src
 - `productId`
 - `name`
 - `description`
+- `features`
 - `priceInCents`
 - `currency`
 - `stock`
@@ -176,16 +179,12 @@ backend/src
 
 El seed vive en:
 
-- [seed-products.cjs](c:/Users/quich/Documents/PruebaWompi/backend/scripts/seed-products.cjs)
+- [seed-products.cjs](../backend/scripts/seed-products.cjs)
 
 Productos cargados:
 
-- PlayStation 4
-- PlayStation 5
-- Xbox Series X
-- Xbox Series S
-- Nintendo Switch
-- Nintendo Switch 2
+- El seed actual usa un catalogo dummy para la demo funcional del checkout.
+- El tipo de producto es intercambiable; la solucion esta pensada para cualquier catalogo simple de un solo item por compra.
 
 ## Cobertura
 

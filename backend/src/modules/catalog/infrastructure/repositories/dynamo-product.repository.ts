@@ -14,6 +14,7 @@ type ProductRecord = {
   productId: string;
   name: string;
   description: string;
+  features?: string[];
   priceInCents: number;
   currency: string;
   stock: number;
@@ -67,6 +68,7 @@ export class DynamoProductRepository implements ProductRepositoryPort {
           productId: product.id,
           name: product.name,
           description: product.description,
+          features: product.features,
           priceInCents: product.priceInCents,
           currency: product.currency,
           stock: product.stock,
@@ -82,6 +84,7 @@ export class DynamoProductRepository implements ProductRepositoryPort {
       record.productId,
       record.name,
       record.description,
+      record.features ?? [],
       record.priceInCents,
       record.currency,
       record.stock,

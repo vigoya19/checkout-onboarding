@@ -64,8 +64,17 @@
                   "});",
                   "",
                   "const data = pm.response.json();",
-                  "if (Array.isArray(data) && data.length > 0 && data[0].productId) {",
-                  "  pm.environment.set('productId', data[0].productId);",
+                  "if (Array.isArray(data) && data.length > 0) {",
+                  "  const product = data[0];",
+                  "  if (product.productId) {",
+                  "    pm.environment.set('productId', product.productId);",
+                  "  }",
+                  "  if (product.priceInCents) {",
+                  "    pm.environment.set('productPriceInCents', product.priceInCents);",
+                  "  }",
+                  "  if (product.currency) {",
+                  "    pm.environment.set('currency', product.currency);",
+                  "  }",
                   "}"
                 ]
               }
@@ -77,6 +86,50 @@
     {
       "name": "Payments",
       "item": [
+        {
+          "name": "Get Checkout Config",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/payments/checkout-config",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "checkout-config"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "if (data.baseFeeInCents) {",
+                  "  pm.environment.set('baseFeeInCents', data.baseFeeInCents);",
+                  "}",
+                  "if (data.deliveryFeeInCents) {",
+                  "  pm.environment.set('deliveryFeeInCents', data.deliveryFeeInCents);",
+                  "}",
+                  "const productPrice = Number(pm.environment.get('productPriceInCents') || 0);",
+                  "const baseFee = Number(data.baseFeeInCents || 0);",
+                  "const deliveryFee = Number(data.deliveryFeeInCents || 0);",
+                  "if (productPrice > 0) {",
+                  "  pm.environment.set('amountInCents', productPrice + baseFee + deliveryFee);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Get Acceptance Tokens",
           "request": {
@@ -288,6 +341,10 @@
   "variable": [
     {
       "key": "computedWebhookPayload",
+      "value": ""
+    },
+    {
+      "key": "productPriceInCents",
       "value": ""
     }
   ]

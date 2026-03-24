@@ -1,6 +1,6 @@
 # Checkout Onboarding
 
-Aplicacion full stack para un flujo de compra de una consola con pago con tarjeta usando Wompi Sandbox.
+Aplicacion full stack para un flujo de checkout onboarding de un producto con pago con tarjeta usando Wompi Sandbox.
 
 ## Stack
 
@@ -20,15 +20,24 @@ Aplicacion full stack para un flujo de compra de una consola con pago con tarjet
 
 ## Flujo funcional implementado
 
-1. El usuario ve una lista de consolas disponibles.
-2. Selecciona una consola y arranca el checkout.
+1. El usuario ve una lista de productos disponibles.
+2. Selecciona un producto y arranca el checkout.
 3. Diligencia tarjeta, datos del cliente y direccion de entrega.
 4. Acepta terminos y autorizaciones exigidas por Wompi.
-5. Revisa el resumen con producto, base fee y delivery fee.
+5. Revisa el resumen con producto, base fee y delivery fee cargados desde backend.
 6. El frontend tokeniza la tarjeta y el backend crea la transaccion local.
 7. El backend procesa el pago en Wompi Sandbox.
 8. Se muestra el estado final del pago.
 9. Si el pago fue aprobado, el stock baja y el catalogo se refresca.
+
+## Diagrama de arquitectura
+
+![Diagrama de arquitectura](./docs/DiagramaArquietctura.png)
+
+Documentacion relacionada:
+
+- [Arquitectura](./docs/03-arquitectura.md)
+- [Prompt para diagrama](./docs/06-prompt-diagrama-lucidchart.md)
 
 ## Cobertura
 
@@ -48,18 +57,18 @@ Aplicacion full stack para un flujo de compra de una consola con pago con tarjet
 
 ## Documentacion
 
-- [Casos de uso](c:/Users/quich/Documents/PruebaWompi/docs/01-casos-de-uso.md)
-- [Documentacion tecnica](c:/Users/quich/Documents/PruebaWompi/docs/02-documentacion-tecnica.md)
-- [Arquitectura](c:/Users/quich/Documents/PruebaWompi/docs/03-arquitectura.md)
-- [Documentacion del proyecto](c:/Users/quich/Documents/PruebaWompi/docs/04-documentacion-del-proyecto.md)
-- [Guia de pruebas](c:/Users/quich/Documents/PruebaWompi/docs/05-guia-de-pruebas.md)
-- [Prompt para diagrama](c:/Users/quich/Documents/PruebaWompi/docs/06-prompt-diagrama-lucidchart.md)
+- [Casos de uso](./docs/01-casos-de-uso.md)
+- [Documentacion tecnica](./docs/02-documentacion-tecnica.md)
+- [Arquitectura](./docs/03-arquitectura.md)
+- [Documentacion del proyecto](./docs/04-documentacion-del-proyecto.md)
+- [Guia de pruebas](./docs/05-guia-de-pruebas.md)
+- [Prompt para diagrama](./docs/06-prompt-diagrama-lucidchart.md)
 
 ## Variables de entorno
 
 ### Frontend
 
-Ver [frontend/.env.example](c:/Users/quich/Documents/PruebaWompi/frontend/.env.example)
+Ver [frontend/.env.example](./frontend/.env.example)
 
 - `VITE_API_BASE_URL`
 - `VITE_WOMPI_BASE_URL`
@@ -67,7 +76,7 @@ Ver [frontend/.env.example](c:/Users/quich/Documents/PruebaWompi/frontend/.env.e
 
 ### Backend
 
-Ver [backend/.env.example](c:/Users/quich/Documents/PruebaWompi/backend/.env.example)
+Ver [backend/.env.example](./backend/.env.example)
 
 - `PORT`
 - `AWS_REGION`
@@ -81,6 +90,21 @@ Ver [backend/.env.example](c:/Users/quich/Documents/PruebaWompi/backend/.env.exa
 - `WOMPI_PRIVATE_KEY`
 - `WOMPI_INTEGRITY_SECRET`
 - `WOMPI_EVENTS_SECRET`
+- `CHECKOUT_BASE_FEE_IN_CENTS`
+- `CHECKOUT_DELIVERY_FEE_IN_CENTS`
+
+## Imagenes de productos
+
+Las imagenes del catalogo se leen desde:
+
+- [frontend/public/product-images](./frontend/public/product-images)
+
+Puedes agregar archivos con el nombre exacto del producto, por ejemplo:
+
+- `PlayStation 5.png`
+- `PlayStation 4.jpg`
+
+El frontend intenta cargar automaticamente extensiones `png`, `jpg`, `jpeg` y `webp`.
 
 ## Comandos utiles
 
@@ -114,7 +138,7 @@ npm run deploy
 
 ## Postman
 
-La coleccion y environments estan en [postman](c:/Users/quich/Documents/PruebaWompi/postman).
+La coleccion y environments estan en [postman](./postman).
 
 ## Nota
 

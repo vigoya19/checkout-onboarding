@@ -2,7 +2,15 @@ import { Product } from './product.entity';
 
 describe('Product', () => {
   it('creates a new instance when stock changes', () => {
-    const product = new Product('prod', 'PS5', 'desc', 1000, 'COP', 3);
+    const product = new Product(
+      'prod',
+      'PS5',
+      'desc',
+      ['feat'],
+      1000,
+      'COP',
+      3,
+    );
 
     const updated = product.updateStock(1);
 
@@ -10,7 +18,15 @@ describe('Product', () => {
   });
 
   it('preserves product identity when stock changes', () => {
-    const product = new Product('prod', 'PS5', 'desc', 1000, 'COP', 3);
+    const product = new Product(
+      'prod',
+      'PS5',
+      'desc',
+      ['feat'],
+      1000,
+      'COP',
+      3,
+    );
 
     const updated = product.updateStock(1);
 
@@ -18,7 +34,15 @@ describe('Product', () => {
   });
 
   it('stores the new stock value', () => {
-    const product = new Product('prod', 'PS5', 'desc', 1000, 'COP', 3);
+    const product = new Product(
+      'prod',
+      'PS5',
+      'desc',
+      ['feat'],
+      1000,
+      'COP',
+      3,
+    );
 
     const updated = product.updateStock(1);
 

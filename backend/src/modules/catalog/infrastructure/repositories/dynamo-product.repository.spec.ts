@@ -10,6 +10,7 @@ describe('DynamoProductRepository', () => {
           productId: 'prod',
           name: 'PS5',
           description: 'desc',
+          features: ['feat'],
           priceInCents: 100,
           currency: 'COP',
           stock: 2,
@@ -22,7 +23,7 @@ describe('DynamoProductRepository', () => {
     );
 
     await expect(repository.list()).resolves.toEqual([
-      new Product('prod', 'PS5', 'desc', 100, 'COP', 2),
+      new Product('prod', 'PS5', 'desc', ['feat'], 100, 'COP', 2),
     ]);
     expect(send.mock.calls[0][0]).toBeInstanceOf(ScanCommand);
   });
@@ -53,6 +54,7 @@ describe('DynamoProductRepository', () => {
             productId: 'prod',
             name: 'PS5',
             description: 'desc',
+            features: ['feat'],
             priceInCents: 100,
             currency: 'COP',
             stock: 2,
@@ -63,7 +65,7 @@ describe('DynamoProductRepository', () => {
     );
 
     await expect(repository.findById('prod')).resolves.toEqual(
-      new Product('prod', 'PS5', 'desc', 100, 'COP', 2),
+      new Product('prod', 'PS5', 'desc', ['feat'], 100, 'COP', 2),
     );
   });
 
@@ -73,7 +75,7 @@ describe('DynamoProductRepository', () => {
       { send } as never,
       { get: jest.fn().mockReturnValue('ProductsTable') } as never,
     );
-    const product = new Product('prod', 'PS5', 'desc', 100, 'COP', 2);
+    const product = new Product('prod', 'PS5', 'desc', ['feat'], 100, 'COP', 2);
 
     await expect(repository.save(product)).resolves.toBe(product);
     expect(send.mock.calls[0][0]).toBeInstanceOf(PutCommand);

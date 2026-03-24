@@ -38,6 +38,7 @@ describe('SummaryBackdrop', () => {
     id: 'prod_ps5',
     name: 'PlayStation 5',
     description: 'desc',
+    features: ['1 TB SSD'],
     priceInCents: 299900000,
     currency: 'COP' as const,
     stock: 5,
@@ -45,8 +46,6 @@ describe('SummaryBackdrop', () => {
 
   const draft = {
     ...initialCheckoutState.draft,
-    baseFeeInCents: 390000,
-    deliveryFeeInCents: 990000,
     customerName: 'Andres',
     customerEmail: 'andres@example.com',
     customerPhone: '3001234567',
@@ -61,9 +60,31 @@ describe('SummaryBackdrop', () => {
     cardBrand: 'Visa',
   }
 
+  const pricing = {
+    baseFeeInCents: 390000,
+    deliveryFeeInCents: 990000,
+  }
+
   beforeEach(() => {
     ;(useAppDispatch as jest.Mock).mockReturnValue(jest.fn())
-    ;(useAppSelector as jest.Mock).mockReturnValue(false)
+    ;(useAppSelector as jest.Mock).mockImplementation((selector: unknown) => {
+      if (typeof selector !== 'function') {
+        return null
+      }
+
+      return selector({
+        checkout: {
+          ...initialCheckoutState,
+          pricing: {
+            ...initialCheckoutState.pricing,
+            ...pricing,
+            status: 'succeeded',
+          },
+          isSubmittingPayment: false,
+          paymentError: null,
+        },
+      })
+    })
   })
 
   it('processes a successful payment', async () => {
@@ -84,7 +105,7 @@ describe('SummaryBackdrop', () => {
       paymentStatusMessage: 'Aprobada',
     })
 
-    render(<SummaryBackdrop draft={draft} product={product} />)
+    render(<SummaryBackdrop draft={draft} pricing={pricing} product={product} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Pagar con tarjeta' }))
 
@@ -107,7 +128,7 @@ describe('SummaryBackdrop', () => {
     ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
     ;(getAcceptanceTokens as jest.Mock).mockRejectedValue(new Error('boom'))
 
-    render(<SummaryBackdrop draft={draft} product={product} />)
+    render(<SummaryBackdrop draft={draft} pricing={pricing} product={product} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Pagar con tarjeta' }))
 
@@ -120,7 +141,7 @@ describe('SummaryBackdrop', () => {
     const dispatch = jest.fn()
     ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
 
-    render(<SummaryBackdrop draft={draft} product={product} />)
+    render(<SummaryBackdrop draft={draft} pricing={pricing} product={product} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Editar informacion' }))
     expect(dispatch).toHaveBeenCalledWith(backToPayment())
@@ -141,7 +162,7 @@ describe('SummaryBackdrop', () => {
       })
     })
 
-    render(<SummaryBackdrop draft={draft} product={product} />)
+    render(<SummaryBackdrop draft={draft} pricing={pricing} product={product} />)
 
     expect(screen.getByText('Estamos procesando tu pago')).toBeInTheDocument()
     expect(
