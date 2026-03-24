@@ -39,6 +39,11 @@ Este `README` funciona como portada y guía de navegación de toda la documentac
 - Asistente IA conectado a OpenAI por backend
 - Headers de seguridad en backend con `helmet`
 
+## URLs publicas
+
+- Frontend: `https://dexepaqh217sp.cloudfront.net`
+- Backend API: `https://0xcuoebg17.execute-api.us-east-1.amazonaws.com/api`
+
 ## Diagrama de arquitectura
 
 ![Diagrama de arquitectura](./frontend/public/product-images/DiagramaArquitectura.png)
